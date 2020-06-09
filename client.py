@@ -48,20 +48,11 @@ while True:
         author = input("Autor del Ticket: ")
         description = input("Descripción del Ticket: ")
         status = input("Estado del Ticket: ")
-        date = datetime.now()
-        ticket = {
-          "ticket": [
-            {
-              "title": title,
-              "author": author,
-              "description": description,
-              "status": status,
-              "date": str(date)
-            },
-              ]
-        }
+        #date = datetime.now()
+        ticket = {"title": title,"author": author,"description": description,"status": status}#,"date": str(date)}
         ticket_obj = json.dumps(ticket)
-        client.sendto(ticket_obj.encode(), (host, port))
+        client.send(ticket_obj.encode())
+        print(type(ticket))
     elif (opcion == 'AGREGAR'):
         print(client.recv(1024).decode())
         while True:

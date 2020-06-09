@@ -23,11 +23,12 @@ def th_server(sock):
         print('Cliente %s:%s' % (addr[0], addr[1]))
         print("Opcion: " + opcion.decode() + '\n')
 
-        if (opcion.decode() == 'INSERTAR'):
-            ticket = sock.recv(1024).decode()
-            json.dumps(ticket)
-            print(ticket)
-            crearTicket(title=ticket.title,author=ticket.author, description=ticket.description, status=ticket.status, date=ticket.date)
+        if opcion.decode() == 'INSERTAR':
+            ticket=sock.recv(1024).decode()
+            ticket_dict=json.loads(ticket)
+            print(type(ticket_dict))
+            print(ticket_dict)
+            crearTicket(ticket_dict)
 
 
 
