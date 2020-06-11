@@ -14,17 +14,14 @@ def crearTicket(lista):
 def listarTickets():  # función del cliente
     tickets = session.query(Ticket).all()
     for ticket in tickets:
-        print("Id del Ticket: ", ticket.ticket_Id)
-        print("Title: ", ticket.title)
-        print("Author: ", ticket.author)
-        print("Description: ", ticket.description)
-        print("Status: ", ticket.status)
-        print("Date: ", ticket.date)
-    return {'tickets': [ticket.a_json() for ticket in tickets]}
+         ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
+                        "date": print("Fecha: ",str(ticket.date)), "":print("")}
+
+
 
 
 def filtarTickets():
-    (opt, arg) = getopt.getopt(sys.argv[1:], 'a,e,f,p:')
+    (opt, arg) = getopt.getopt(sys.argv[1:], 'a:e:f:p:')
     for (op, ar) in opt:
         if ar == '-a':
             filtrarByAuthor()
@@ -48,4 +45,12 @@ def filtrarByFecha():
 """def myconverter(o): #función serialización de fecha
     if isinstance(o, datetime.now()):
         return o.__str__()"""
+
+"""'ticket_Id: ', ticket['ticket_Id'])
+        print('title: ', ticket['title'])
+        print('author: ', ticket['author'])
+        print('description: ', ticket['description'])
+        print('status: ', ticket['status'])
+        print('date: ', ticket['date'])
+        print(tickets)"""
 
