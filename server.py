@@ -26,24 +26,22 @@ def th_server(sock):
         if opcion.decode() == 'INSERTAR':
             ticket=sock.recv(1024).decode()
             ticket_dict=json.loads(ticket)
-            print(type(ticket_dict))
-            print(ticket_dict)
             crearTicket(ticket_dict)
 
 
 
         elif (opcion.decode() == 'LISTAR'):
-            print("HOLA AMIGO")
+            ticket= sock.recv(1024).decode()
+            tickets_objeto=json.loads(ticket)
 
-        elif (opcion.decode() == 'LEER'):
-            fd = open(archivo, 'r')
-            print('\nEnviando archivo al cliente: ' + archivo + '\n')
-            contenido = fd.read()
-            sock.sendall(contenido.encode())
-            fd.close()
+
+        elif (opcion.decode() == 'FILTRAR'):
+            print("Tranquilo")
+
+        elif (opcion.decode() == 'EDITAR'):
+            print("Tranquilo")
 
         elif (opcion.decode() == 'CERRAR'):
-            fd.close()
             break
 
         else:

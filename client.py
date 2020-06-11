@@ -3,8 +3,9 @@ import sys
 import getopt
 from datetime import datetime
 import json
-from funcions import listarTickets
-from model import *
+from funcions import *
+import datetime
+
 (opt, arg) = getopt.getopt(sys.argv[1:], 'a:p:')
 
 for (op, ar) in opt:
@@ -34,8 +35,9 @@ while True:
     print("""\n
     \t\t\t *** Menu ***
     - INSERTAR
-    - AGREGAR
-    - LEER
+    - LISTAR
+    - FILTRAR
+    - EDITAR
     - CERRAR
     """)
 
@@ -49,22 +51,23 @@ while True:
         author = input("Autor del Ticket: ")
         description = input("Descripción del Ticket: ")
         status = input("Estado del Ticket: ")
-        #date = datetime.now()
-        ticket = {"title": title,"author": author,"description": description,"status": status}#,"date": str(date)}
+        # date = datetime.now()
+        ticket = {"title": title, "author": author, "description": description, "status": status}  # ,"date": str(date)}
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
-        print(type(ticket))
 
     elif (opcion == 'LISTAR'):
-        listarTickets()
+        tickets = listarTickets()
+        tickets_objeto = json.dumps(tickets)
+        client.send(tickets_objeto.encode())
 
 
-    elif (opcion == 'LEER'):
-        contenido = client.recv(1024).decode()
-        print('\nArchivo: ' + archivo + '\n')
-        print(contenido)
-        input('Apretar Enter...')
+    elif (opcion == 'FILTRAR'):
+        input("Ingrese la opción por la que va filtar: ")
+        filtarTickets()
 
+    elif (opcion == 'EDITAR'):
+        print("Editar")
     elif (opcion == 'CERRAR'):
         break
 
