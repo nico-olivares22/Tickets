@@ -16,6 +16,7 @@ def listarTickets():  # función del cliente
     for ticket in tickets:
          ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
                         "date": print("Fecha: ",str(ticket.date)), "":print("")}
+    session.commit() #sino no se actualizaba el listar cuando estaba corriendo el cliente.
 
 
 
@@ -23,20 +24,28 @@ def listarTickets():  # función del cliente
 def filtarTickets():
     (opt, arg) = getopt.getopt(sys.argv[1:], 'a:e:f:p:')
     for (op, ar) in opt:
-        if ar == '-a':
+        if (op == '-a'):
+            argumento = ar
             filtrarByAuthor()
-        elif ar == '-e':
+        elif op in ['-e']:
             filtrarByStatus()
         elif ar == '-f':
             filtrarByFecha()
 
 
 def filtrarByAuthor():
-    session.query(Ticket).filter(Ticket.author)
+    authors = session.query(Ticket).filter(Ticket.author=="author")
+    print(authors)
+    for ticket in authors:
+         ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
+                        "date": print("Fecha: ",str(ticket.date)), "":print("")}
 
 
 def filtrarByStatus():
-    session.query(Ticket).filter(Ticket.status)
+    status = session.query(Ticket).filter(Ticket.status)
+    for ticket in status:
+         ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
+                        "date": print("Fecha: ",str(ticket.date)), "":print("")}
 
 
 def filtrarByFecha():

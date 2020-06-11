@@ -64,7 +64,9 @@ while True:
 
     elif (opcion == 'FILTRAR'):
         input("Ingrese la opción por la que va filtar: ")
-        filtarTickets()
+        tickets= filtarTickets()
+        tickets_filter = json.dumps(tickets)
+        client.send((tickets_filter.encode()))
 
     elif (opcion == 'EDITAR'):
         print("Editar")

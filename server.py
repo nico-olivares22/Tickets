@@ -36,7 +36,8 @@ def th_server(sock):
 
 
         elif (opcion.decode() == 'FILTRAR'):
-            print("Tranquilo")
+            ticket = sock.recv(1024).decode()
+            tickets_filter = json.loads(ticket)
 
         elif (opcion.decode() == 'EDITAR'):
             print("Tranquilo")
