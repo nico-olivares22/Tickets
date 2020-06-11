@@ -7,3 +7,9 @@ def crearTicket(lista):
                     status=lista['status'], date=datetime.now())
     session.add(ticket)
     session.commit()
+
+def listarTickets():
+    tickets = session.query(Ticket).all()
+    print (tickets)
+
+

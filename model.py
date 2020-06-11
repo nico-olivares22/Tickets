@@ -22,3 +22,15 @@ class Ticket(Base):
         self.description = description
         self.status = status
         self.date = date
+
+    # Convertir objeto Ticket  en JSON
+    def a_json(self):
+        ticket_json = {
+            'ticket_Id':self.ticket_Id,
+            'title': self.title,
+            'author': self.author,
+            'description': self.description,
+            'status': self.status,
+            'date': self.date
+        }
+        return ticket_json

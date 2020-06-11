@@ -3,6 +3,7 @@ import sys
 import getopt
 from datetime import datetime
 import json
+from funcions import listarTickets
 from model import *
 (opt, arg) = getopt.getopt(sys.argv[1:], 'a:p:')
 
@@ -53,13 +54,10 @@ while True:
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
         print(type(ticket))
-    elif (opcion == 'AGREGAR'):
-        print(client.recv(1024).decode())
-        while True:
-            msg = input()
-            client.sendto(msg.encode(), (host, port))
-            if msg == 'quit':
-                break
+
+    elif (opcion == 'LISTAR'):
+        listarTickets()
+
 
     elif (opcion == 'LEER'):
         contenido = client.recv(1024).decode()

@@ -32,18 +32,8 @@ def th_server(sock):
 
 
 
-        elif (opcion.decode() == 'AGREGAR'):
-            fd = open(archivo, 'a+')
-            texto = '\n*** Escribir "quit" para terminar ***\nTexto:'
-            sock.send(texto.encode())
-            while True:
-                message = sock.recv(1024)
-                if message.decode() == 'quit':
-                    break
-                print('Recibido: ' + message.decode())
-                fd.write(message.decode() + '\n')
-            print('Bucle terminado.')
-            fd.close()
+        elif (opcion.decode() == 'LISTAR'):
+            print("HOLA AMIGO")
 
         elif (opcion.decode() == 'LEER'):
             fd = open(archivo, 'r')
