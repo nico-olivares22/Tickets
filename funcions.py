@@ -3,7 +3,6 @@ from db_config import *
 from datetime import datetime
 import getopt, sys
 
-
 def crearTicket(lista):
     ticket = Ticket(title=lista['title'], author=lista['author'], description=lista['description'],
                     status=lista['status'], date=datetime.now())
@@ -14,7 +13,7 @@ def crearTicket(lista):
 def listarTickets():  # función del cliente
     tickets = session.query(Ticket).all()
     for ticket in tickets:
-         ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
+         ticket_objeto= {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id),"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
                         "date": print("Fecha: ",str(ticket.date)), "":print("")}
     session.commit() #sino no se actualizaba el listar cuando estaba corriendo el cliente.
 
@@ -23,24 +22,26 @@ def listarTickets():  # función del cliente
 
 def filtarTickets():
     (opt, arg) = getopt.getopt(sys.argv[1:], 'a:e:f:p:')
-    for (op, ar) in opt:
-        if (op == '-a'):
-            argumento = ar
-            filtrarByAuthor()
-        elif op in ['-e']:
-            filtrarByStatus()
-        elif ar == '-f':
-            filtrarByFecha()
+    if opt == 'FILTRAR':
+        for (op, ar) in opt:
+            if ar =='-a':
+                argumento = str(ar)
+                filtrarByAuthor()
+            elif op == '-e':
+                argumento= ar
+                argumento=filtrarByStatus()
+            elif op == '-f':
+                argumento = ar
+                argumento=filtrarByFecha()
+            else:
+                print("OPCION NO VÁLIDA por parte del filtro")
 
 
 def filtrarByAuthor():
-    authors = session.query(Ticket).filter(Ticket.author=="author")
-    print(authors)
-    for ticket in authors:
+    tickets_author = session.query(Ticket).filter_by(author=Ticket.author) #problema con el filtro, trae todos los tickets por algun motivo
+    for ticket in tickets_author:
          ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
                         "date": print("Fecha: ",str(ticket.date)), "":print("")}
-
-
 def filtrarByStatus():
     status = session.query(Ticket).filter(Ticket.status)
     for ticket in status:
@@ -62,4 +63,6 @@ def filtrarByFecha():
         print('status: ', ticket['status'])
         print('date: ', ticket['date'])
         print(tickets)"""
+
+
 

@@ -43,7 +43,7 @@ while True:
 
     opcion = input('Opcion: ').upper()
 
-    client.sendto(opcion.encode(), (host, port))
+    client.send(opcion.encode())
 
     if (opcion == 'INSERTAR'):
         print("Ingrese datos del Ticket")
@@ -51,8 +51,7 @@ while True:
         author = input("Autor del Ticket: ")
         description = input("Descripción del Ticket: ")
         status = input("Estado del Ticket: ")
-        # date = datetime.now()
-        ticket = {"title": title, "author": author, "description": description, "status": status}  # ,"date": str(date)}
+        ticket = {"title": title, "author": author, "description": description, "status": status}
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
 
@@ -63,8 +62,8 @@ while True:
 
 
     elif (opcion == 'FILTRAR'):
-        input("Ingrese la opción por la que va filtar: ")
-        tickets= filtarTickets()
+        option= input("Opción por filtrar: ")
+        tickets= filtrarByAuthor()
         tickets_filter = json.dumps(tickets)
         client.send((tickets_filter.encode()))
 
