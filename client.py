@@ -1,7 +1,7 @@
 import socket
 import sys
 import getopt
-from datetime import datetime
+import datetime
 import json
 from funcions import *
 import datetime
@@ -68,7 +68,10 @@ while True:
         client.send((tickets_filter.encode()))
 
     elif (opcion == 'EDITAR'):
-        print("Editar")
+        option = input("Ingrese ID del Ticket: ")
+        ticket_edit = editTicket(str(option))
+        edit_obj = json.dumps(ticket_edit)
+        client.send(edit_obj.encode())
     elif (opcion == 'CERRAR'):
         break
 

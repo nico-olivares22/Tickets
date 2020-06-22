@@ -27,9 +27,6 @@ def th_server(sock):
             ticket=sock.recv(1024).decode()
             ticket_dict=json.loads(ticket)
             crearTicket(ticket_dict)
-
-
-
         elif (opcion.decode() == 'LISTAR'):
             ticket= sock.recv(1024).decode()
             tickets_objeto=json.loads(ticket)
@@ -40,7 +37,9 @@ def th_server(sock):
             tickets_filter = json.loads(ticket)
 
         elif (opcion.decode() == 'EDITAR'):
-            print("Tranquilo")
+            ticket = sock.recv(1024).decode()
+            edit = json.loads(ticket)
+
 
         elif (opcion.decode() == 'CERRAR'):
             break
