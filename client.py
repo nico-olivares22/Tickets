@@ -62,8 +62,7 @@ while True:
 
 
     elif (opcion == 'FILTRAR'):
-        option= input("Opción por filtrar: ")
-        tickets= filtrarByAuthor()
+        tickets= filtarTickets()
         tickets_filter = json.dumps(tickets)
         client.send((tickets_filter.encode()))
 

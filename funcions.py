@@ -21,49 +21,45 @@ def listarTickets():  # función del cliente
 
 
 def filtarTickets():
-    (opt, arg) = getopt.getopt(sys.argv[1:], 'a:e:f:p:')
-    if opt == 'FILTRAR':
-        for (op, ar) in opt:
-            if ar =='-a':
-                argumento = str(ar)
-                filtrarByAuthor()
-            elif op == '-e':
-                argumento= ar
-                argumento=filtrarByStatus()
-            elif op == '-f':
-                argumento = ar
-                argumento=filtrarByFecha()
-            else:
-                print("OPCION NO VÁLIDA por parte del filtro")
+    print("Puede filtrar por autor, escriba -a + Nombre del Autor. Puede filtrar por Estado, escriba -e + Estado y puede filtrar por Fecha, escriba -f + fecha.")
+    keywords = input("-a -e -f: ").split(" ",1) #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
+    print("")
+    (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f')
+    for op,ar in opts:
+        if op in ('-a'):
+            author =ar
+            print("Argumento: " +ar)
+            filtrarByAuthor(ticket=author)
+        elif op in ['-e']:
+            status = ar
+            filtrarByStatus(ticket=status)
+        elif op in ['-f']:
+            date = ar
+            filtrarByFecha(ticket=date)
+        else:
+            print("Opción Incorrecta")
 
 
-def filtrarByAuthor():
-    #tickets_author = session.query(Ticket).filter_by(author=Ticket.author) #problema con el filtro, trae todos los tickets por algun motivo
-    tickets_auhor = session.query(Ticket).filter_by(edi)
+def filtrarByAuthor(ticket):
+    tickets_author = session.query(Ticket).filter_by(author=ticket)
     for ticket in tickets_author:
-         ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
-                        "date": print("Fecha: ",str(ticket.date)), "":print("")}
-def filtrarByStatus():
-    status = session.query(Ticket).filter(Ticket.status)
+         ticket_objeto= {"title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ", ticket.status),
+                        "date": print("Fecha: ", str(ticket.date)), "":print("")}
+    session.commit()
+def filtrarByStatus(ticket):
+    status = session.query(Ticket).filter_by(status=ticket)
     for ticket in status:
          ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
                         "date": print("Fecha: ",str(ticket.date)), "":print("")}
-
-
-def filtrarByFecha():
-    session.query(Ticket).filter(Ticket.date)
-
-"""def myconverter(o): #función serialización de fecha
-    if isinstance(o, datetime.now()):
-        return o.__str__()"""
-
-"""'ticket_Id: ', ticket['ticket_Id'])
-        print('title: ', ticket['title'])
-        print('author: ', ticket['author'])
-        print('description: ', ticket['description'])
-        print('status: ', ticket['status'])
-        print('date: ', ticket['date'])
-        print(tickets)"""
+    session.commit()
+def filtrarByFecha(ticket):
+    dates = session.query(Ticket).filter_by(date = ticket)
+    for ticket in dates:
+        ticket_objeto = {"title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author),
+                         "description": print("Descripción: ", ticket.description),
+                         "status": print("Estado: ", ticket.status),
+                         "date": print("Fecha: ", str(ticket.date)), "": print("")}
+    session.commit()
 
 def editTicket(id):
     print("")
@@ -99,25 +95,3 @@ def menu_editar(lista):
         ticket = {"title": lista.title, "author": lista.author, "description": lista.description, "status": lista.status, "date": lista.date}
         print("Ticket Editado")
         print(ticket)
-
-
-
-
-""" LOGICA DEL GETOPT
-keywords = input("-t -a -d -e -f: ") #lista con argumentos para el editado
-    (opts, args) = getopt.getopt(keywords, 'p:a:t:a:d:e:f') #los opts son los argumentos que vienen del cliente
-    for op in keywords.split():
-        if op=='-t':
-            ticket.title = op
-        elif op == '-a':
-            ticket.author = op
-        elif op == "-e":
-            ticket.status = op
-        elif op == "-d":
-             ticket.description = op
-        elif op == "-f":
-             op = str(datetime.now())
-        else:
-            print("Opción inválida")
-            break
-"""
