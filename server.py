@@ -18,30 +18,30 @@ for (op, ar) in opcion:
 def th_server(sock):
     print("Iniciando thread...\n")
     while True:
-
         opcion = sock.recv(1024)
         print('Cliente %s:%s' % (addr[0], addr[1]))
         print("Opcion: " + opcion.decode() + '\n')
 
-        if opcion.decode() == 'INSERTAR':
-            ticket=sock.recv(1024).decode()
-            ticket_dict=json.loads(ticket)
+        if opcion.decode() == ('-i') or opcion.decode() == ('--insertar'):
+            ticket = sock.recv(1024).decode()
+            ticket_dict = json.loads(ticket)
             crearTicket(ticket_dict)
-        elif (opcion.decode() == 'LISTAR'):
-            ticket= sock.recv(1024).decode()
-            tickets_objeto=json.loads(ticket)
+
+        elif opcion.decode() == ('-l') or opcion.decode() == ('--listar'):
+            ticket = sock.recv(1024).decode()
+            tickets_objeto = json.loads(ticket)
 
 
-        elif (opcion.decode() == 'FILTRAR'):
+        elif opcion.decode() == ('-f') or opcion.decode() == ('--filtrar'):
             ticket = sock.recv(1024).decode()
             tickets_filter = json.loads(ticket)
 
-        elif (opcion.decode() == 'EDITAR'):
+        elif opcion.decode() == ('-e') or opcion.decode() == ('--editar'):
             ticket = sock.recv(1024).decode()
             edit = json.loads(ticket)
 
 
-        elif (opcion.decode() == 'CERRAR'):
+        elif opcion.decode() == ('-c') or opcion.decode() == ('--cerrar'):
             break
 
         else:

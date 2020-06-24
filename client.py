@@ -34,18 +34,19 @@ while True:
 
     print("""\n
     \t\t\t *** Menu ***
-    - INSERTAR
-    - LISTAR
-    - FILTRAR
-    - EDITAR
-    - CERRAR
+    * -i/--insertar para insertar un Ticket
+    * -l/--listar para listar los Tickets 
+    * -f/--filtrar para filtrar Tickets
+    * -e/--editar para editar un Ticket
+    * -c/--cerrar para cerrar el cliente
     """)
-
-    opcion = input('Opcion: ').upper()
-
+    opcion = input("Opción: ")
+    opts, args = getopt.getopt(opcion, "p:a:ilfec",['insertar','listar','filtrar','editar','cerrar'] )
+    print(opcion)
+    #opcion = input('Opcion: ').upper() linea que estaba
     client.send(opcion.encode())
-
-    if (opcion == 'INSERTAR'):
+    #for op in opcion:
+    if opcion in ['-i','--insertar']:
         print("Ingrese datos del Ticket")
         title = input("Título del Ticket: ")
         author = input("Autor del Ticket: ")
@@ -55,23 +56,24 @@ while True:
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
 
-    elif (opcion == 'LISTAR'):
+    elif opcion in ['-l','--listar']:
         tickets = listarTickets()
         tickets_objeto = json.dumps(tickets)
         client.send(tickets_objeto.encode())
 
 
-    elif (opcion == 'FILTRAR'):
-        tickets= filtarTickets()
+    elif opcion in ['-f','--filtrar']:
+        tickets = filtarTickets()
         tickets_filter = json.dumps(tickets)
         client.send((tickets_filter.encode()))
 
-    elif (opcion == 'EDITAR'):
+    elif opcion in ['-e','--editar']:
         option = input("Ingrese ID del Ticket: ")
         ticket_edit = editTicket(str(option))
         edit_obj = json.dumps(ticket_edit)
         client.send(edit_obj.encode())
-    elif (opcion == 'CERRAR'):
+
+    elif opcion in ['-c','--cerrar']:
         break
 
     else:
@@ -79,3 +81,4 @@ while True:
         input('Apretar Enter...')
 
 client.close()
+

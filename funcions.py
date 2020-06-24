@@ -5,7 +5,7 @@ import getopt, sys, json
 
 def crearTicket(lista):
     ticket = Ticket(title=lista['title'], author=lista['author'], description=lista['description'],
-                    status=lista['status'], date=datetime.now())
+                    status=lista['status'],date=datetime.now())
     session.add(ticket)
     session.commit()
 
@@ -33,9 +33,9 @@ def filtarTickets():
         elif op in ['-e']:
             status = ar
             filtrarByStatus(ticket=status)
-        elif op in ['-f']:
-            date = ar
-            filtrarByFecha(ticket=date)
+        elif op in ['-f']: #consultar metodos de validaciones
+            fecha = str(ar)
+            filtrarByFecha(ticket=fecha)
         else:
             print("Opción Incorrecta")
 
@@ -43,19 +43,19 @@ def filtarTickets():
 def filtrarByAuthor(ticket):
     tickets_author = session.query(Ticket).filter_by(author=ticket)
     for ticket in tickets_author:
-         ticket_objeto= {"title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ", ticket.status),
+         ticket_objeto= {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id),"title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ", ticket.status),
                         "date": print("Fecha: ", str(ticket.date)), "":print("")}
     session.commit()
 def filtrarByStatus(ticket):
     status = session.query(Ticket).filter_by(status=ticket)
     for ticket in status:
-         ticket_objeto= {"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
+         ticket_objeto= {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id),"title": print("Título: ",ticket.title), "author": print("Autor: ",ticket.author), "description": print("Descripción: ", ticket.description), "status": print("Estado: ",ticket.status),
                         "date": print("Fecha: ",str(ticket.date)), "":print("")}
     session.commit()
 def filtrarByFecha(ticket):
     dates = session.query(Ticket).filter_by(date = ticket)
     for ticket in dates:
-        ticket_objeto = {"title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author),
+        ticket_objeto = {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id),"title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author),
                          "description": print("Descripción: ", ticket.description),
                          "status": print("Estado: ", ticket.status),
                          "date": print("Fecha: ", str(ticket.date)), "": print("")}
@@ -64,13 +64,16 @@ def filtrarByFecha(ticket):
 def editTicket(id):
     print("")
     ticket = session.query(Ticket).get(id)
-    ticket_objeto = {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id), "title": print("Título: ", ticket.title),
-                     "author": print("Autor: ", ticket.author),
-                     "description": print("Descripción: ", ticket.description),
-                     "status": print("Estado: ", ticket.status),
-                     "date": print("Fecha: ", str(ticket.date)), "": print("")}
-    menu_editar(ticket)
-    session.commit()
+    if session.query(Ticket).filter(Ticket.ticket_Id.ilike(id)).count()==0:
+        print("No existe el ID Amigo")
+    else:
+        ticket_objeto = {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id), "title": print("Título: ", ticket.title),
+                         "author": print("Autor: ", ticket.author),
+                         "description": print("Descripción: ", ticket.description),
+                         "status": print("Estado: ", ticket.status),
+                         "date": print("Fecha: ", str(ticket.date)), "": print("")}
+        menu_editar(ticket)
+        session.commit()
 
 
 def menu_editar(lista):
@@ -78,6 +81,7 @@ def menu_editar(lista):
     while not salir:
         print("Opciones t (titulo) a(autor) d(descripción) e(estado) f(fecha) s(salir)")
         opcion= input("Opción: ")
+        print("")
         if opcion == 't':
             lista.title= input("Titulo del Ticket: ")
         elif opcion == 'a':
@@ -92,6 +96,12 @@ def menu_editar(lista):
             salir=True
         else:
             print("Ingrese opciones válidas")
-        ticket = {"title": lista.title, "author": lista.author, "description": lista.description, "status": lista.status, "date": lista.date}
+
         print("Ticket Editado")
-        print(ticket)
+        print("")
+        ticket = {"ticked_Id": print("Ticked_Id: ", lista.ticket_Id), "title": print("Título: ", lista.title),
+                         "author": print("Autor: ", lista.author),
+                         "description": print("Descripción: ", lista.description),
+                         "status": print("Estado: ", lista.status),
+                         "date": print("Fecha: ", str(lista.date)), "": print("")}
+
