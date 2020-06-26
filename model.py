@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, Column, DateTime, MetaData
+from sqlalchemy import String, Integer, Column, DateTime, MetaData, Date
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -11,7 +11,7 @@ class Ticket(Base):
     author = Column(String(45), nullable=False)
     description = Column(String(300), nullable=False)
     status = Column(String(45), nullable=False)
-    date = Column(DateTime, nullable=False)
+    date = Column(Date, nullable=False)
 
     def __repr(self):
         return '<Ticket: %r %r %r %r %r %r>' % (self.ticket_Id,self.title, self.author,self.description, self.status, self.date)

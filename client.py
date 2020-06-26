@@ -1,10 +1,6 @@
 import socket
-import sys
-import getopt
-import datetime
-import json
 from funcions import *
-import datetime
+from filtro_cliente import filtarTickets
 
 (opt, arg) = getopt.getopt(sys.argv[1:], 'a:p:')
 
@@ -52,6 +48,11 @@ while True:
         author = input("Autor del Ticket: ")
         description = input("Descripción del Ticket: ")
         status = input("Estado del Ticket: ")
+        if status=='pendiente' or status=='en proceso' or status=='aprobado':
+            print("")
+        else:
+            print("Ha ingresado un estado que no corresponde")
+            status=input("Estado del Ticket: ")
         ticket = {"title": title, "author": author, "description": description, "status": status}
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
