@@ -38,22 +38,10 @@ while True:
     """)
     opcion = input("Opción: ")
     opts, args = getopt.getopt(opcion, "p:a:ilfec",['insertar','listar','filtrar','editar','cerrar'] )
-    print(opcion)
-    #opcion = input('Opcion: ').upper() linea que estaba
     client.send(opcion.encode())
     #for op in opcion:
     if opcion in ['-i','--insertar']:
-        print("Ingrese datos del Ticket")
-        title = input("Título del Ticket: ")
-        author = input("Autor del Ticket: ")
-        description = input("Descripción del Ticket: ")
-        status = input("Estado del Ticket: ")
-        if status=='pendiente' or status=='en proceso' or status=='aprobado':
-            print("")
-        else:
-            print("Ha ingresado un estado que no corresponde")
-            status=input("Estado del Ticket: ")
-        ticket = {"title": title, "author": author, "description": description, "status": status}
+        ticket=ingresar_DatosTicket()
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
 
@@ -76,7 +64,6 @@ while True:
 
     elif opcion in ['-c','--cerrar']:
         break
-
     else:
         print('\nOpcion invalida!\n')
         input('Apretar Enter...')
