@@ -1,4 +1,4 @@
-import socket
+import socket,sys,getopt,json
 from funcions import *
 from filtro_cliente import filtarTickets
 
@@ -39,12 +39,11 @@ while True:
     opcion = input("Opción: ")
     opts, args = getopt.getopt(opcion, "p:a:ilfec",['insertar','listar','filtrar','editar','cerrar'] )
     client.send(opcion.encode())
-    #for op in opcion:
+
     if opcion in ['-i','--insertar']:
         ticket=ingresar_DatosTicket()
         ticket_obj = json.dumps(ticket)
         client.send(ticket_obj.encode())
-
     elif opcion in ['-l','--listar']:
         tickets = listarTickets()
         tickets_objeto = json.dumps(tickets)
@@ -64,9 +63,11 @@ while True:
 
     elif opcion in ['-c','--cerrar']:
         break
+
     else:
         print('\nOpcion invalida!\n')
         input('Apretar Enter...')
-
-client.close()
-
+try:
+    print("")
+except KeyboardInterrupt:
+    client.close()

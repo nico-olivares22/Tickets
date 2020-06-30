@@ -1,9 +1,9 @@
 from model import *
 from db_config import *
 from datetime import datetime,date
-import getopt, sys, json
+import socket
 
-def crearTicket(lista):
+def crearTicket(lista): #funcion server
     ticket = Ticket(title=lista['title'], author=lista['author'], description=lista['description'],
                     status=lista['status'],date=date.today())
     session.add(ticket)
@@ -31,7 +31,7 @@ def ingresar_DatosTicket(): #función cliente que pide datos para crear el ticke
     ticket = {"title": title, "author": author, "description": description, "status": status}
     return ticket
 
-def editTicket(id):
+def editTicket(id): #función del cliente para editar tickets
     print("")
     ticket = session.query(Ticket).get(id)
     if session.query(Ticket).filter(Ticket.ticket_Id.ilike(id)).count()==0:
@@ -46,7 +46,7 @@ def editTicket(id):
         session.commit()
 
 
-def menu_editar(lista):
+def menu_editar(lista): #función, menu para editTicket
     salir = False
     while not salir:
         print("Opciones t (titulo) a(autor) d(descripción) e(estado) f(fecha) s(salir)")
@@ -76,3 +76,13 @@ def menu_editar(lista):
                          "status": print("Estado: ", lista.status),
                          "date": print("Fecha: ", str(lista.date)), "": print("")}
 
+def createSocketServer():
+    variable = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    return variable
+
+
+
+    """def broadcast(self, message):
+            #Sending message to all clients
+            for client in self.clients:
+                client.send(message)"""
