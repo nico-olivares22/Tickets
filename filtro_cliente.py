@@ -2,38 +2,9 @@ import getopt
 from db_config import *
 from model import *
 
-def recorrerVariable(variable):
-    for ticket in variable:
-        ticket_objeto = {"ticked_Id": print("Ticked_Id: ", ticket.ticket_Id),
-                         "title": print("Título: ", ticket.title), "author": print("Autor: ", ticket.author),
-                         "description": print("Descripción: ", ticket.description),
-                         "status": print("Estado: ", ticket.status),
-                         "date": print("Fecha: ", str(ticket.date)), "": print("")}
-        session.commit()
 
-def filtarTickets(): #función que permite filtrar Tickets por distintos argumentos
-    print("Puede filtrar por autor, escriba -a + Nombre del Autor. Puede filtrar por Estado, escriba -e + Estado y puede filtrar por Fecha, escriba -f + fecha. Por último para cerra el filtro escriba -c")
-    keywords = input("-a -e -f -c: ").split(" ",1) #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
-    print("")
-    (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:c')
-    for op,ar in opts:
-        if op in ('-a'):
-            author =ar
-            filtrarByAuthor(ticket=author)
-            menuFiltrarAuthor(argumento=ar)
-        elif op in ['-e']:
-            status = ar
-            filtrarByStatus(ticket=status)
-            menuFiltrarStatus(argumento=ar)
-        elif op in ['-f']: #consultar metodos de validaciones
-            fecha = ar
-            print("Fecha: " + fecha)
-            filtrarByFecha(ticket=fecha)
-            menuFiltrarFecha(argumento=ar)
-        elif op in ['-c']:
-            break
-        else:
-            print("Opción Incorrecta")
+
+
 
 def filtrarByAuthor(ticket): #permite filtrar tickets por autor
     tickets_author = session.query(Ticket).filter(Ticket.author==ticket)
