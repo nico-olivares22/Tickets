@@ -1,6 +1,7 @@
-from datetime import datetime,date
+from getopt import GetoptError
 import socket,json,getopt
 from model import MyEncoder
+import csv
 
 def ingresar_DatosTicket(): #función cliente que pide datos para crear el ticket
     print("Ingrese datos del Ticket")
@@ -29,6 +30,18 @@ def imprimirTicket(ticket):
           ticket['author'],
           "Descripción: ", ticket['description'], "Estado: ", ticket['status'], "Fecha: ",
           ticket['date'])
+
+def exportarTickets(lista):
+    """with open("tickets.csv", "w") as f:
+        wr = csv.writer(f, delimiter="\n")
+        wr.writerow(lista)"""
+    with open("tickets.csv", "w", newline='') as f:
+        fieldnames = ['ticket_Id', 'title', 'author', 'description', 'status','date']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for ticket in lista:
+            ticket_dict = json.loads(ticket)
+            writer.writerow(ticket_dict)
 
 def menu_editar(ticket): #función, menu para editTicket
     ticket_json = json.loads(ticket)
@@ -67,31 +80,28 @@ def menu_editar(ticket): #función, menu para editTicket
 #Filtro
 
 def filtarTickets(client): #función que permite filtrar Tickets por distintos argumentos
-    print("Puede filtrar por autor, escriba -a + Nombre del Autor. Puede filtrar por Estado, escriba -e + Estado y puede filtrar por Fecha, escriba -f + fecha. Por último para cerra el filtro escriba -c")
+    print("Puede filtrar por autor, escriba -a + Nombre del Autor. Puede filtrar por Estado, escriba -e + Estado y puede filtrar por Fecha, "
+          "escriba -f + fecha. Puede filtrar de Manera Simultanea también mezclando los filtros, por ejemplo -e pendiente -a robot.")
     keywords = input("-a -e -f -c: ").split(" ") #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
-    print("")
     ticket = {}
-    (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:c')
-    for op,ar in opts:
-        if op in ('-a'):
-            print("")
-            argumento =ar
-            ticket['author'] = argumento
-            print("ARGUMENTO CLIENTE: ", argumento)
-            print("Tipo de Argumento: ", type(argumento))
-        elif op in ['-e']:
-            print("")
-            argumento = ar
-            ticket['status']=argumento
-            print("Argumento CLIENTE ESTADO: ", argumento)
-        elif op in ['-f']: #consultar metodos de validaciones
-            argumento = ar
-            ticket['date']= argumento
-        elif op in ['-c']:
-            break
-        else:
-            print("Opción Incorrecta")
-    print("Ticket Lista: ", ticket)
+    try:
+        (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:c')
+        for op, ar in opts:
+            if op in ('-a'):
+                argumento = ar
+                ticket['author'] = argumento
+            elif op in ['-e']:
+                argumento = ar
+                ticket['status'] = argumento
+            elif op in ['-f']:  # consultar metodos de validaciones
+                argumento = ar
+                ticket['date'] = argumento
+            elif op in ['-c']:
+                break
+            else:
+                print("Opción Incorrecta")
+    except GetoptError:
+        print("Error, Opción Mal Introducida")
     ticket_dict = json.dumps(ticket,cls=MyEncoder)
     mandarArgumento(ticket_dict,client)
     return ticket

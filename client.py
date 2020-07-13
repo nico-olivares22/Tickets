@@ -12,6 +12,13 @@ def recibirTickets(client, cantidad):
     print("Tickets Agregados: ", len(tickets))
     imprimirTickets(tickets)
 
+def recibirTicketsDespachados(client,cantidad):
+    cantidad_integer = int(cantidad)  # cantidad que ingresa el user
+    tickets = []
+    for x in range(cantidad_integer):  # va cantidad integer
+        tickets.append(client.recv(1024).decode())
+    print("Tickets Agregados: ", len(tickets))
+    exportarTickets(tickets)
 
 (opt, arg) = getopt.getopt(sys.argv[1:], 'a:p:')
 
@@ -45,10 +52,11 @@ while True:
     * -l/--listar para listar los Tickets 
     * -f/--filtrar para filtrar Tickets
     * -e/--editar para editar un Ticket
+    * -d/--despachar para exportar tickets 
     * -c/--cerrar para cerrar el cliente
     """)
     opcion = input("Opción: ")
-    opts, args = getopt.getopt(opcion, "p:a:ilfec",['insertar','listar','filtrar','editar','cerrar'] )
+    opts, args = getopt.getopt(opcion, "p:a:ilfedc",['insertar','listar','filtrar','editar','despachar','cerrar'] )
     client.send(opcion.encode())
     if opcion in ['-i','--insertar']:
         ticket=ingresar_DatosTicket()
@@ -69,9 +77,6 @@ while True:
         print("Cantidad Recibida: ", cantidad_recibida)  # linea 2
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ") #linea 4
         client.send(cantidad.encode()) #linea 4
-        #tickets = client.recv(6115).decode()
-        #tickets_filtrados = json.loads(tickets)
-        #imprimirTicketsFiltrados(tickets_filtrados)
         recibirTickets(client,cantidad)
     elif opcion in ['-e','--editar']:
         option = input("Ingrese ID del Ticket: ")
@@ -80,7 +85,13 @@ while True:
         ticket_editado = menu_editar(ticket)
         ticket_editado_json = json.dumps(ticket_editado)
         client.send(ticket_editado_json.encode())
-
+    elif opcion in ['-d', '--despachar']:
+        cantidad_tickets = client.recv(1024).decode()
+        print("La cantidad de Tickets es: ", cantidad_tickets)
+        cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ")  # el user introduce la cantidad que quiera traer
+        client.send(cantidad.encode())  # se la manda al server
+        recibirTicketsDespachados(client, cantidad)
+        print("Entrando")
     elif opcion in ['-c','--cerrar']:
         break
 

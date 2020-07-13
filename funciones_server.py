@@ -1,8 +1,7 @@
 from model import *
 from db_config import *
 from datetime import date
-import socket, json, getopt
-
+import socket, json
 
 def createSocketServer():  # función que permite crear Socket del Servidor
     variable = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,8 +18,7 @@ def listarTicketsServer():
     session.commit()
     return tickets
 
-# EDITAR TICKET CASI FUNCIONA
-def editarTicketServer(id, valores):  ##llega bien el ticket pero no lo puedo guardar
+def editarTicketServer(id, valores):
     ticket = session.query(Ticket).get(int(id))
     valores_json = json.loads(valores)
     ticket.title = valores_json['title']
@@ -48,40 +46,32 @@ def recorrerVariable(variable):
         session.commit()
         return variable
 
-def filtrarByAuthor(argumento):  # permite filtrar tickets por autor
-    tickets_author = session.query(Ticket).filter(Ticket.author == argumento).all()
-    recorrerVariable(tickets_author)
-    return tickets_author
+def filtrarByAuthor(argumento,ticket):  # permite filtrar tickets por autor
+    ticket = ticket.filter(Ticket.author == argumento)
+    recorrerVariable(ticket)
+    return ticket
 
-def filtrarByAuthorAndEstado(argumento, argumento2):
-    tickets = session.query(Ticket).filter(Ticket.author == argumento, Ticket.status == argumento2)
-    recorrerVariable(tickets)
-    return tickets
+def filtrarByStatus(argumento,ticket):  # permite filtrar tickets por estado
+    ticket = ticket.filter(Ticket.status == argumento)
+    recorrerVariable(ticket)
+    return ticket
 
-def filtrarByStatus(argumento):  # permite filtrar tickets por estado
-    status = session.query(Ticket).filter(Ticket.status == argumento).all()
-    recorrerVariable(status)
-    return status
-
-def filtrarByFecha(argumento):  # permite filtrar tickets por fecha
-    dates = session.query(Ticket).filter(Ticket.date == argumento).all()
-    recorrerVariable(dates)
-    return dates
+def filtrarByFecha(argumento,ticket):  # permite filtrar tickets por fecha
+    ticket = ticket.filter(Ticket.date == argumento)
+    recorrerVariable(ticket)
+    return ticket
 
 def filtrarTickets_Server(sock):
     ticket = recibirArgumento(sock)
     ticket_loads = json.loads(ticket)
-    print("LLEGANDO: ", ticket_loads)
-    if 'author' in ticket_loads:
-        print("1")
-        tickets = filtrarByAuthor(argumento=ticket_loads['author'])
-    if 'status' in ticket_loads:
-        print("2")
-        tickets = filtrarByStatus(argumento=ticket_loads['status'])
-    if 'date' in ticket_loads:
-        print("3")
-        tickets = filtrarByFecha(argumento=ticket_loads['date'])
-
+    tickets = session.query(Ticket).filter()
+    for k,v in dict(ticket_loads).items():
+        if k == 'author':
+            tickets = filtrarByAuthor(ticket_loads['author'], tickets)
+        if k == 'status':
+            tickets = filtrarByStatus(ticket_loads['status'], tickets)
+        if k == 'date':
+            tickets = filtrarByFecha(ticket_loads['date'], tickets)
     return tickets
 
 def recibirArgumento(sock):

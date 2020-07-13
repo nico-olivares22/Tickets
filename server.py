@@ -1,5 +1,6 @@
 from model import *
 import threading,time
+import multiprocessing
 from threading import Semaphore
 from funciones_server import *
 import json,getopt,sys
@@ -37,6 +38,7 @@ def th_server(sock,addr, semaphore):
 
         elif opcion.decode() == ('-f') or opcion.decode() == ('--filtrar'):
             tickets_filtrados = filtrarTickets_Server(sock)
+            tickets_filtrados = tickets_filtrados.all()
             proporcion = len(tickets_filtrados) #linea 1
             sock.send(str(proporcion).encode()) #linea 2
             cantidad_recibida = sock.recv(1024).decode() #linea 3
@@ -55,6 +57,14 @@ def th_server(sock,addr, semaphore):
             semaphore.release()
             time.sleep(0.5)
             print("Cliente %s:%s ha editado un Ticket" % (addr), "\n")
+
+        elif (opcion.decode() == ('-d') or opcion.decode() == ('--despachar')):
+            tickets = listarTicketsServer()  # trae los tickets de la Base
+            cantidad_tickets = str(len(tickets))
+            sock.send(cantidad_tickets.encode())
+            cantidad = sock.recv(1024).decode()  # recibe la cantidad que ingreso el usuario
+            traerTicketsPorCantidad(tickets, sock, cantidad)
+            print("entrando sin ningun problema")
         elif opcion.decode() == ('-c') or opcion.decode() == ('--cerrar'):
             print("Cliente %s:%s DESCONECTADO \n" %(addr))
             break
@@ -76,13 +86,9 @@ def historial_server(fecha,opcion,address):
 
 def traerTicketsPorCantidad(lista, sock, cantidad):
     cantidad_integer = int(cantidad)
-    #for x in range(cantidad_integer):
     for ticket in lista[0:cantidad_integer]:
-        #tickets_objeto = json.dumps(lista, cls=MyEncoder)
-        #sock.send(str(tickets_objeto).encode()) #manda lista al cliente
         ticket_objeto = json.dumps(ticket,cls=MyEncoder)
         sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
-    #return ticket_objeto
 try:
     while True:
             clientsocket, addr = serversocket.accept()
@@ -93,6 +99,7 @@ try:
             print('Thread Number: ' + str(ThreadCount), "\n")
             semaphore = threading.Semaphore(1)
             th = threading.Thread(target=th_server, args=(clientsocket, addr,semaphore)).start()
+            #mp = multiprocessing.Process(target=th_server, args=(clientsocket, addr,semaphore)).start()
 except KeyboardInterrupt:
         clientsocket.close()
 
