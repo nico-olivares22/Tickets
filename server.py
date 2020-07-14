@@ -1,7 +1,4 @@
-from model import *
 import threading,time
-import multiprocessing
-from threading import Semaphore
 from funciones_server import *
 import json,getopt,sys
 
@@ -43,7 +40,7 @@ def th_server(sock,addr, semaphore):
             sock.send(str(proporcion).encode()) #linea 2
             cantidad_recibida = sock.recv(1024).decode() #linea 3
             traerTicketsPorCantidad(tickets_filtrados,sock,cantidad_recibida)
-            print("Cliente %s:%s ha filtrado los Tickets Disponibles" % (addr), "\n")
+            print("Cliente %s:%s ha filtrado Tickets " % (addr), "\n")
 
         elif opcion.decode() == ('-e') or opcion.decode() == ('--editar'):
             ticket_ID = sock.recv(1024).decode()
@@ -56,15 +53,17 @@ def th_server(sock,addr, semaphore):
             editarTicketServer(ticket_ID,ticket_editado)
             semaphore.release()
             time.sleep(0.5)
-            print("Cliente %s:%s ha editado un Ticket" % (addr), "\n")
+            print("Cliente %s:%s ha Editado un Ticket" % (addr), "\n")
 
         elif (opcion.decode() == ('-d') or opcion.decode() == ('--despachar')):
-            tickets = listarTicketsServer()  # trae los tickets de la Base
-            cantidad_tickets = str(len(tickets))
-            sock.send(cantidad_tickets.encode())
-            cantidad = sock.recv(1024).decode()  # recibe la cantidad que ingreso el usuario
-            traerTicketsPorCantidad(tickets, sock, cantidad)
-            print("entrando sin ningun problema")
+            tickets_filtrados = filtrarTickets_Server(sock)
+            tickets_filtrados = tickets_filtrados.all()
+            proporcion = len(tickets_filtrados)  # linea 1
+            sock.send(str(proporcion).encode())  # linea 2
+            cantidad_recibida = sock.recv(1024).decode()  # linea 3
+            traerTicketsPorCantidad(tickets_filtrados, sock, cantidad_recibida)
+            print("Cliente %s:%s ha Exportado Tickets" % (addr), "\n")
+
         elif opcion.decode() == ('-c') or opcion.decode() == ('--cerrar'):
             print("Cliente %s:%s DESCONECTADO \n" %(addr))
             break
@@ -72,23 +71,11 @@ def th_server(sock,addr, semaphore):
             print('\nOpcion invalida!\n')
 
 serversocket = createSocketServer()
-
 host = ""
 port = p
 ThreadCount = 0
 serversocket.bind((host, port))  # linea de comandos, host y puerto
 serversocket.listen(5)
-
-def historial_server(fecha,opcion,address):
-    archivo = open('historial_server.log','a')
-    archivo.write(f"\nFecha: {fecha}, Opción: {opcion}, Cliente %s:%d" %(address))
-    archivo.close()
-
-def traerTicketsPorCantidad(lista, sock, cantidad):
-    cantidad_integer = int(cantidad)
-    for ticket in lista[0:cantidad_integer]:
-        ticket_objeto = json.dumps(ticket,cls=MyEncoder)
-        sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
 try:
     while True:
             clientsocket, addr = serversocket.accept()

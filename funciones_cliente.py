@@ -1,7 +1,7 @@
 from getopt import GetoptError
 import socket,json,getopt
 from model import MyEncoder
-import csv
+import csv, zipfile,sys
 
 def ingresar_DatosTicket(): #función cliente que pide datos para crear el ticket
     print("Ingrese datos del Ticket")
@@ -9,7 +9,7 @@ def ingresar_DatosTicket(): #función cliente que pide datos para crear el ticke
     author = input("Autor del Ticket: ")
     description = input("Descripción del Ticket: ")
     status = input("Estado del Ticket: ")
-    if status == 'pendiente' or status == 'en proceso' or status == 'aprobado':
+    if status == 'pendiente' or status == 'en-proceso' or status == 'aprobado':
         print("")
     else:
         print("Ha ingresado un estado que no corresponde")
@@ -32,9 +32,6 @@ def imprimirTicket(ticket):
           ticket['date'])
 
 def exportarTickets(lista):
-    """with open("tickets.csv", "w") as f:
-        wr = csv.writer(f, delimiter="\n")
-        wr.writerow(lista)"""
     with open("tickets.csv", "w", newline='') as f:
         fieldnames = ['ticket_Id', 'title', 'author', 'description', 'status','date']
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -42,6 +39,9 @@ def exportarTickets(lista):
         for ticket in lista:
             ticket_dict = json.loads(ticket)
             writer.writerow(ticket_dict)
+    jungle_zip = zipfile.ZipFile('tickets.zip', 'w')
+    jungle_zip.write('tickets.csv', compress_type=zipfile.ZIP_DEFLATED)
+    jungle_zip.close()
 
 def menu_editar(ticket): #función, menu para editTicket
     ticket_json = json.loads(ticket)
@@ -61,7 +61,7 @@ def menu_editar(ticket): #función, menu para editTicket
             ticket_json['description'] = input("Descripción: ")
         elif opcion == 'e':
             ticket_json['status'] = input("Estado: ")
-            if ticket_json['status'] == 'pendiente' or ticket_json['status'] == 'aprobado' or ticket_json['status'] == 'en proceso':
+            if ticket_json['status'] == 'pendiente' or ticket_json['status'] == 'aprobado' or ticket_json['status'] == 'en-proceso':
                 print("")
             else:
                 print("Ha ingresado un estado que no corresponde")
@@ -81,11 +81,11 @@ def menu_editar(ticket): #función, menu para editTicket
 
 def filtarTickets(client): #función que permite filtrar Tickets por distintos argumentos
     print("Puede filtrar por autor, escriba -a + Nombre del Autor. Puede filtrar por Estado, escriba -e + Estado y puede filtrar por Fecha, "
-          "escriba -f + fecha. Puede filtrar de Manera Simultanea también mezclando los filtros, por ejemplo -e pendiente -a robot.")
-    keywords = input("-a -e -f -c: ").split(" ") #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
+          "escriba -f + fecha. Escriba -l para traer todos los Tickets. Puede filtrar de Manera Simultanea también mezclando los filtros, por ejemplo -e pendiente -a robot.")
+    keywords = input("-a -e -f -l: ").split(" ") #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
     ticket = {}
     try:
-        (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:c')
+        (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:l')
         for op, ar in opts:
             if op in ('-a'):
                 argumento = ar
@@ -96,16 +96,60 @@ def filtarTickets(client): #función que permite filtrar Tickets por distintos a
             elif op in ['-f']:  # consultar metodos de validaciones
                 argumento = ar
                 ticket['date'] = argumento
-            elif op in ['-c']:
+            elif op in ['-l']:
                 break
             else:
                 print("Opción Incorrecta")
+        ticket_dict = json.dumps(ticket, cls=MyEncoder)
+        mandarArgumento(ticket_dict, client)
     except GetoptError:
         print("Error, Opción Mal Introducida")
-    ticket_dict = json.dumps(ticket,cls=MyEncoder)
-    mandarArgumento(ticket_dict,client)
+    return ticket
+
+def despacharTicketsCliente(client): #función que permite filtrar Tickets por distintos argumentos
+    print("Puede exportar por autor, escriba -a + Nombre del Autor. Puede exportar por Estado, escriba -e + Estado y puede exportar por Fecha, "
+          "escriba -f + fecha. Escriba -l para exportar todos los Tickets. Puede exportar Tickets de Manera Simultanea también.")
+    keywords = input("-a -e -f -l: ").split(" ") #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
+    ticket = {}
+    try:
+        (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:l')
+        for op, ar in opts:
+            if op in ('-a'):
+                argumento = ar
+                ticket['author'] = argumento
+            elif op in ['-e']:
+                argumento = ar
+                ticket['status'] = argumento
+            elif op in ['-f']:  # consultar metodos de validaciones
+                argumento = ar
+                ticket['date'] = argumento
+            elif op in ['-l']:
+                break
+            else:
+                print("Opción Incorrecta")
+        ticket_dict = json.dumps(ticket, cls=MyEncoder)
+        mandarArgumento(ticket_dict, client)
+    except GetoptError:
+        print("Error, Opción Mal Introducida")
     return ticket
 
 def mandarArgumento(argumento, client):
     argumento_str = str(argumento)
     client.send(argumento_str.encode())
+
+def recibirTickets(client, cantidad):
+    cantidad_integer = int(cantidad) #cantidad que ingresa el user
+    tickets = []
+    for x in range(cantidad_integer):  # va cantidad integer
+        tickets.append(client.recv(1024).decode())
+    print("Tickets Agregados: ", len(tickets))
+    imprimirTickets(tickets)
+
+def recibirTicketsDespachados(client,cantidad):
+    cantidad_integer = int(cantidad)  # cantidad que ingresa el user
+    tickets = []
+    for x in range(cantidad_integer):  # va cantidad integer
+        tickets.append(client.recv(1024).decode())
+    print("Tickets Agregados: ", len(tickets))
+    imprimirTickets(tickets)
+    exportarTickets(tickets)

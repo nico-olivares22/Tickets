@@ -78,3 +78,14 @@ def recibirArgumento(sock):
     argumento = sock.recv(1024).decode()
     return argumento
 
+def historial_server(fecha,opcion,address):
+    archivo = open('historial_server.log','a')
+    archivo.write(f"\nFecha: {fecha}, Opción: {opcion}, Cliente %s:%d" %(address))
+    archivo.close()
+
+def traerTicketsPorCantidad(lista, sock, cantidad):
+    cantidad_integer = int(cantidad)
+    for ticket in lista[0:cantidad_integer]:
+        ticket_objeto = json.dumps(ticket,cls=MyEncoder)
+        sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
+

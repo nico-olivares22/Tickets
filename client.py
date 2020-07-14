@@ -3,23 +3,6 @@ from funciones_cliente import *
 from model import MyEncoder
 from json import JSONDecodeError
 
-
-def recibirTickets(client, cantidad):
-    cantidad_integer = int(cantidad) #cantidad que ingresa el user
-    tickets = []
-    for x in range(cantidad_integer):  # va cantidad integer
-        tickets.append(client.recv(1024).decode())
-    print("Tickets Agregados: ", len(tickets))
-    imprimirTickets(tickets)
-
-def recibirTicketsDespachados(client,cantidad):
-    cantidad_integer = int(cantidad)  # cantidad que ingresa el user
-    tickets = []
-    for x in range(cantidad_integer):  # va cantidad integer
-        tickets.append(client.recv(1024).decode())
-    print("Tickets Agregados: ", len(tickets))
-    exportarTickets(tickets)
-
 (opt, arg) = getopt.getopt(sys.argv[1:], 'a:p:')
 
 for (op, ar) in opt:
@@ -44,6 +27,7 @@ client.connect((host, port))
 
 print('Socket conectado al host', host, 'en el puerto', port)
 
+
 while True:
 
     print("""\n
@@ -66,11 +50,8 @@ while True:
         cantidad_tickets = client.recv(1024).decode()
         print("La cantidad de Tickets es: ", cantidad_tickets)
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ") # el user introduce la cantidad que quiera traer
-        try:
-            client.send(cantidad.encode())  # se la manda al server
-            recibirTickets(client, cantidad)
-        except JSONDecodeError:
-            print("Cantidad NO válida, no hay esa cantidad de tickets disponible ;)")
+        client.send(cantidad.encode())  # se la manda al server
+        recibirTickets(client, cantidad)
     elif opcion in ['-f','--filtrar']:
         filtarTickets(client)
         cantidad_recibida = client.recv(1024).decode()  # linea 1
@@ -86,15 +67,14 @@ while True:
         ticket_editado_json = json.dumps(ticket_editado)
         client.send(ticket_editado_json.encode())
     elif opcion in ['-d', '--despachar']:
-        cantidad_tickets = client.recv(1024).decode()
-        print("La cantidad de Tickets es: ", cantidad_tickets)
-        cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ")  # el user introduce la cantidad que quiera traer
-        client.send(cantidad.encode())  # se la manda al server
+        despacharTicketsCliente(client)
+        cantidad_recibida = client.recv(1024).decode()  # linea 1
+        print("Cantidad Recibida: ", cantidad_recibida)  # linea 2
+        cantidad = input("Ingrese la Cantidad de Tickets que quiere Exportar: ")  # linea 4
+        client.send(cantidad.encode())  # linea 4
         recibirTicketsDespachados(client, cantidad)
-        print("Entrando")
     elif opcion in ['-c','--cerrar']:
         break
-
     else:
         print('\nOpcion invalida!\n')
         input('Apretar Enter...')
