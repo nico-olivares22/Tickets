@@ -1,15 +1,12 @@
 import threading,time
 from funciones_server import *
-import json,getopt,sys
+import json,logging
+from multiprocessing import Process
+from funciones_cliente import exportarTickets
+serversocket = createSocketServer()
+establecerConexion_Server(serversocket)
 
-(opcion, arg) = getopt.getopt(sys.argv[1:], 'p:')
-
-for (op, ar) in opcion:
-    if op == '-p':
-        p = int(ar)
-        print('Opcion -p exitosa!')
-
-def th_server(sock,addr, semaphore):
+def th_server(sock,addr, semaphore,lock):
     print("Iniciando thread...\n")
     while True:
         opcion = sock.recv(1024)
@@ -22,7 +19,9 @@ def th_server(sock,addr, semaphore):
         if opcion.decode() == ('-i') or opcion.decode() == ('--insertar'):
             ticket = sock.recv(1024).decode()
             ticket_dict = json.loads(ticket)
+            print(lock.acquire())
             crearTicket(ticket_dict)
+            lock.release()
             print("Ticket creado por el Cliente %s:%s" %(addr), "\n")
 
         elif opcion.decode() == ('-l') or opcion.decode() == ('--listar'):
@@ -70,24 +69,16 @@ def th_server(sock,addr, semaphore):
         else:
             print('\nOpcion invalida!\n')
 
-serversocket = createSocketServer()
-host = ""
-port = p
 ThreadCount = 0
-serversocket.bind((host, port))  # linea de comandos, host y puerto
-serversocket.listen(5)
 try:
     while True:
             clientsocket, addr = serversocket.accept()
             print("\nObteniendo conexion desde %s:%d\n" % (addr[0],addr[1]))
-            #th = threading.Thread(target=th_server, args=(clientsocket, addr))
-            #th.start()
             ThreadCount += 1
             print('Thread Number: ' + str(ThreadCount), "\n")
+            lock = threading.Lock() #se crea el lock
             semaphore = threading.Semaphore(1)
-            th = threading.Thread(target=th_server, args=(clientsocket, addr,semaphore)).start()
-            #mp = multiprocessing.Process(target=th_server, args=(clientsocket, addr,semaphore)).start()
+            th = threading.Thread(target=th_server, args=(clientsocket, addr,semaphore,lock,)).start()
+
 except KeyboardInterrupt:
         clientsocket.close()
-
-

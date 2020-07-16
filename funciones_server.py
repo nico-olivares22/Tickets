@@ -1,11 +1,22 @@
 from model import *
 from db_config import *
 from datetime import date
-import socket, json
+import socket, json,getopt,sys,multiprocessing
 
 def createSocketServer():  # función que permite crear Socket del Servidor
     variable = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     return variable
+
+def establecerConexion_Server(serversocket):
+    (opcion, arg) = getopt.getopt(sys.argv[1:], 'p:')
+    for (op, ar) in opcion:
+        if op == '-p':
+            p = int(ar)
+            print('Opcion -p exitosa!')
+        host = ""
+        port = p
+        serversocket.bind((host, port))  # linea de comandos, host y puerto
+        serversocket.listen(5)
 
 def crearTicket(lista):  # funcion server, que permite insertar un Ticket
     ticket = Ticket(title=lista['title'], author=lista['author'], description=lista['description'],
@@ -36,29 +47,17 @@ def traerTicketPorID(id):
     return ticket.toJSON()
 
 # FILTRO
-def recorrerVariable(variable):
-    for ticket in variable:
-        ticket_objeto = {"ticked_Id": ticket.ticket_Id,
-                         "title": ticket.title, "author": ticket.author,
-                         "description": ticket.description,
-                         "status": ticket.status,
-                         "date": str(ticket.date)}
-        session.commit()
-        return variable
 
 def filtrarByAuthor(argumento,ticket):  # permite filtrar tickets por autor
     ticket = ticket.filter(Ticket.author == argumento)
-    recorrerVariable(ticket)
     return ticket
 
 def filtrarByStatus(argumento,ticket):  # permite filtrar tickets por estado
     ticket = ticket.filter(Ticket.status == argumento)
-    recorrerVariable(ticket)
     return ticket
 
 def filtrarByFecha(argumento,ticket):  # permite filtrar tickets por fecha
     ticket = ticket.filter(Ticket.date == argumento)
-    recorrerVariable(ticket)
     return ticket
 
 def filtrarTickets_Server(sock):
@@ -89,3 +88,6 @@ def traerTicketsPorCantidad(lista, sock, cantidad):
         ticket_objeto = json.dumps(ticket,cls=MyEncoder)
         sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
 
+def generarProceso_Pararelo(sock):
+    proceso = multiprocessing.Process(target=(filtrarTickets_Server(sock)))
+    return proceso

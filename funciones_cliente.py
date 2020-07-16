@@ -1,7 +1,31 @@
 from getopt import GetoptError
 import socket,json,getopt
 from model import MyEncoder
-import csv, zipfile,sys
+import csv, zipfile,sys,os
+from random import randint
+from multiprocessing import Process
+def createSocketCliente():  # función que permite crear Socket del Servidor
+    try:
+        variable = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except socket.error:
+        print('Fallo al crear el socket!')
+        sys.exit()
+    return variable
+
+def establecerConexion_Cliente(client):
+    (opt, arg) = getopt.getopt(sys.argv[1:], 'a:p:')
+    for (op, ar) in opt:
+        if op == '-a':
+            a = str(ar)
+        elif op == '-p':
+            p = int(ar)
+            print('Opcion -p exitosa!')
+    print('Socket Creado!')
+    host = a
+    port = p
+    client.connect((host, port))
+    print('Socket conectado al host', host, 'en el puerto', port)
+    return client
 
 def ingresar_DatosTicket(): #función cliente que pide datos para crear el ticket
     print("Ingrese datos del Ticket")
@@ -39,7 +63,7 @@ def exportarTickets(lista):
         for ticket in lista:
             ticket_dict = json.loads(ticket)
             writer.writerow(ticket_dict)
-    jungle_zip = zipfile.ZipFile('tickets.zip', 'w')
+    jungle_zip = zipfile.ZipFile('tickets.zip' + str(randint(1,10000)), 'w')
     jungle_zip.write('tickets.csv', compress_type=zipfile.ZIP_DEFLATED)
     jungle_zip.close()
 
@@ -104,6 +128,7 @@ def filtarTickets(client): #función que permite filtrar Tickets por distintos a
         mandarArgumento(ticket_dict, client)
     except GetoptError:
         print("Error, Opción Mal Introducida")
+        filtarTickets(client) #recursividad
     return ticket
 
 def despacharTicketsCliente(client): #función que permite filtrar Tickets por distintos argumentos
@@ -131,6 +156,7 @@ def despacharTicketsCliente(client): #función que permite filtrar Tickets por d
         mandarArgumento(ticket_dict, client)
     except GetoptError:
         print("Error, Opción Mal Introducida")
+        despacharTicketsCliente(client)
     return ticket
 
 def mandarArgumento(argumento, client):
@@ -152,4 +178,8 @@ def recibirTicketsDespachados(client,cantidad):
         tickets.append(client.recv(1024).decode())
     print("Tickets Agregados: ", len(tickets))
     imprimirTickets(tickets)
-    exportarTickets(tickets)
+    #exportarTickets(tickets)
+    proceso = Process(target=exportarTickets(tickets))
+    proceso.start()
+    print("Proceso:", os.getpid())
+
