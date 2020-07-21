@@ -74,13 +74,11 @@ def menu_editar(ticket): #función, menu para editTicket
     print("\n")
     salir = False
     while not salir:
-        print("Opciones t (titulo) a(autor) d(descripción) e(estado) s(salir)", "\n")
+        print("Opciones t (titulo) d(descripción) e(estado) s(salir)", "\n")
         opcion= input("Opción: ")
         print("")
         if opcion == 't':
             ticket_json['title'] = input("Titulo del Ticket: ")
-        elif opcion == 'a':
-            ticket_json['author'] = input("Autor del Ticket: ")
         elif opcion == 'd':
             ticket_json['description'] = input("Descripción: ")
         elif opcion == 'e':
@@ -174,11 +172,13 @@ def recibirTickets(client, cantidad):
 def recibirTicketsDespachados(client,cantidad):
     cantidad_integer = int(cantidad)  # cantidad que ingresa el user
     tickets = []
-    for x in range(cantidad_integer):  # va cantidad integer
-        tickets.append(client.recv(1024).decode())
-    print("Tickets Agregados: ", len(tickets))
-    imprimirTickets(tickets)
-    proceso = Process(target=exportarTickets, args=(tickets,))
-    proceso.start()
-    print("Proceso:", os.getpid())
+    if cantidad_integer == 0:
+        print("NO hay tickets con ese/esos argumentos para Exportar")
+    else:
+        for x in range(cantidad_integer):  # va cantidad integer
+            tickets.append(client.recv(1024).decode())
+        print("Tickets Agregados: ", len(tickets))
+        imprimirTickets(tickets)
+        proceso = Process(target=exportarTickets, args=(tickets,))
+        proceso.start()
 

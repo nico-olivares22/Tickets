@@ -44,10 +44,10 @@ def th_server(sock,addr, semaphore):
             print("Id Recibido amigo: ", ticket_ID)
             semaphore.acquire()
             ticket = traerTicketPorID(ticket_ID)
-            ticket_objeto = json.dumps(ticket,cls=MyEncoder)
-            sock.send(ticket_objeto.encode()) #manda el ticket en json al cliente
-            ticket_editado = sock.recv(1024).decode() #recibe el ticket editado
-            editarTicketServer(ticket_ID,ticket_editado)
+            ticket_objeto = json.dumps(ticket, cls=MyEncoder)
+            sock.send(ticket_objeto.encode())  # manda el ticket en json al cliente
+            ticket_editado = sock.recv(1024).decode()  # recibe el ticket editado
+            editarTicketServer(ticket_ID, ticket_editado)
             semaphore.release()
             time.sleep(0.5)
             print("Cliente %s:%s ha Editado un Ticket" % (addr), "\n")

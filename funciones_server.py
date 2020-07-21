@@ -1,3 +1,4 @@
+from sqlalchemy.orm.exc import NoResultFound
 from model import *
 from db_config import *
 from datetime import date
@@ -42,13 +43,15 @@ def editarTicketServer(id, valores):
 
 def traerTicketPorID(id):
     ticket = session.query(Ticket).get(int(id))
+    return ticket.toJSON()
+
+def verificar_ticketID(ticket_ID):
     try:
-        if session.query(Ticket).filter(Ticket.ticket_Id.ilike(id)).count() == 0:
-            print("No existe el ID Amigo")
-        return ticket.toJSON()
-    except AttributeError:
-        print("NO hay Ticket con ese ID")
-# FILTRO
+        session.query(Ticket).filter(Ticket.ticket_Id == ticket_ID).one()
+        retorno = True
+    except NoResultFound:
+        retorno = False
+    return retorno
 
 def filtrarByAuthor(argumento,ticket):  # permite filtrar tickets por autor
     ticket = ticket.filter(Ticket.author == argumento)
@@ -89,3 +92,4 @@ def traerTicketsPorCantidad(lista, sock, cantidad):
     for ticket in lista[0:cantidad_integer]:
         ticket_objeto = json.dumps(ticket,cls=MyEncoder)
         sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
+
