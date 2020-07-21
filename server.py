@@ -1,76 +1,82 @@
-from db_config import *
-import socket
-import sys
-import threading
-import json
-import getopt
-from funcions import *
-from model import *
+import threading,time
+from funciones_server import *
+import json,logging
+from multiprocessing import Process
+from funciones_cliente import exportarTickets
+serversocket = createSocketServer()
+establecerConexion_Server(serversocket)
 
-(opcion, arg) = getopt.getopt(sys.argv[1:], 'p:')
-
-for (op, ar) in opcion:
-    if op == '-p':
-        p = int(ar)
-        print('Opcion -p exitosa!')
-
-
-def th_server(sock):
+def th_server(sock,addr, semaphore):
     print("Iniciando thread...\n")
     while True:
-
         opcion = sock.recv(1024)
+        fecha = date.today() #fecha de operación
         print('Cliente %s:%s' % (addr[0], addr[1]))
-        print("Opcion: " + opcion.decode() + '\n')
-
-        if (opcion.decode() == 'INSERTAR'):
+        print("Opcion: " + opcion.decode()) #opción que viene desde el cliente
+        print("Fecha: ", fecha) #imprimir fecha
+        print("")
+        historial_server(fecha=fecha, opcion=opcion.decode(), address=addr)
+        if opcion.decode() == ('-i') or opcion.decode() == ('--insertar'):
             ticket = sock.recv(1024).decode()
-            json.dumps(ticket)
-            print(ticket)
-            crearTicket(title=ticket.title,author=ticket.author, description=ticket.description, status=ticket.status, date=ticket.date)
+            ticket_dict = json.loads(ticket)
+            crearTicket(ticket_dict)
+            print("Ticket creado por el Cliente %s:%s" %(addr), "\n")
 
+        elif opcion.decode() == ('-l') or opcion.decode() == ('--listar'):
+            tickets = listarTicketsServer() #trae los tickets de la Base
+            cantidad_tickets = str(len(tickets))
+            sock.send(cantidad_tickets.encode())
+            cantidad = sock.recv(1024).decode() #recibe la cantidad que ingreso el usuario
+            traerTicketsPorCantidad(tickets, sock, cantidad)
+            print("Cliente %s:%s ha listado los Tickets Disponibles" %(addr), "\n")
 
+        elif opcion.decode() == ('-f') or opcion.decode() == ('--filtrar'):
+            tickets_filtrados = filtrarTickets_Server(sock)
+            tickets_filtrados = tickets_filtrados.all()
+            proporcion = len(tickets_filtrados) #linea 1
+            sock.send(str(proporcion).encode()) #linea 2
+            cantidad_recibida = sock.recv(1024).decode() #linea 3
+            traerTicketsPorCantidad(tickets_filtrados,sock,cantidad_recibida)
+            print("Cliente %s:%s ha filtrado Tickets " % (addr), "\n")
 
-        elif (opcion.decode() == 'AGREGAR'):
-            fd = open(archivo, 'a+')
-            texto = '\n*** Escribir "quit" para terminar ***\nTexto:'
-            sock.send(texto.encode())
-            while True:
-                message = sock.recv(1024)
-                if message.decode() == 'quit':
-                    break
-                print('Recibido: ' + message.decode())
-                fd.write(message.decode() + '\n')
-            print('Bucle terminado.')
-            fd.close()
+        elif opcion.decode() == ('-e') or opcion.decode() == ('--editar'):
+            ticket_ID = sock.recv(1024).decode()
+            print("Id Recibido amigo: ", ticket_ID)
+            semaphore.acquire()
+            ticket = traerTicketPorID(ticket_ID)
+            ticket_objeto = json.dumps(ticket, cls=MyEncoder)
+            sock.send(ticket_objeto.encode())  # manda el ticket en json al cliente
+            ticket_editado = sock.recv(1024).decode()  # recibe el ticket editado
+            editarTicketServer(ticket_ID, ticket_editado)
+            semaphore.release()
+            time.sleep(0.5)
+            print("Cliente %s:%s ha Editado un Ticket" % (addr), "\n")
 
-        elif (opcion.decode() == 'LEER'):
-            fd = open(archivo, 'r')
-            print('\nEnviando archivo al cliente: ' + archivo + '\n')
-            contenido = fd.read()
-            sock.sendall(contenido.encode())
-            fd.close()
+        elif (opcion.decode() == ('-d') or opcion.decode() == ('--despachar')):
+            tickets_filtrados = filtrarTickets_Server(sock)
+            tickets_filtrados = tickets_filtrados.all()
+            proporcion = len(tickets_filtrados)  # linea 1
+            sock.send(str(proporcion).encode())  # linea 2
+            cantidad_recibida = sock.recv(1024).decode()  # linea 3
+            traerTicketsPorCantidad(tickets_filtrados, sock, cantidad_recibida)
+            print("Cliente %s:%s ha Exportado Tickets" % (addr), "\n")
 
-        elif (opcion.decode() == 'CERRAR'):
-            fd.close()
+        elif opcion.decode() == ('-c') or opcion.decode() == ('--cerrar'):
+            print("Cliente %s:%s DESCONECTADO \n" %(addr))
             break
-
         else:
             print('\nOpcion invalida!\n')
 
+ThreadCount = 0
+try:
+    while True:
+            clientsocket, addr = serversocket.accept()
+            print("\nObteniendo conexion desde %s:%d\n" % (addr[0],addr[1]))
+            ThreadCount += 1
+            print('Thread Number: ' + str(ThreadCount), "\n")
+            #lock = threading.Lock() #se crea el lock
+            semaphore = threading.Semaphore(1)
+            th = threading.Thread(target=th_server, args=(clientsocket, addr,semaphore,)).start()
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-host = ""
-port = p
-
-serversocket.bind((host, port))
-
-serversocket.listen(5)
-
-while True:
-    clientsocket, addr = serversocket.accept()
-    print("\nObteniendo conexion desde %s:%s\n" % (addr[0], addr[1]))
-    th = threading.Thread(target=th_server, args=(clientsocket,))
-    th.start()
-clientsocket.close()
+except KeyboardInterrupt:
+        clientsocket.close()
