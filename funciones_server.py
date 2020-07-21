@@ -2,7 +2,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from model import *
 from db_config import *
 from datetime import date
-import socket, json,getopt,sys,multiprocessing
+import socket, json,getopt,sys
 
 def createSocketServer():  # función que permite crear Socket del Servidor
     variable = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -34,7 +34,6 @@ def editarTicketServer(id, valores):
     ticket = session.query(Ticket).get(int(id))
     valores_json = json.loads(valores)
     ticket.title = valores_json['title']
-    ticket.author = valores_json['author']
     ticket.description = valores_json['description']
     ticket.status = valores_json['status']
     session.add(ticket)

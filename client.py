@@ -1,8 +1,6 @@
-import socket,sys,getopt,json,os
 from funciones_cliente import *
-from model import MyEncoder
-from json import JSONDecodeError
 from funciones_server import verificar_ticketID
+
 client = createSocketCliente()
 establecerConexion_Cliente(client)
 
@@ -49,7 +47,11 @@ while True:
 
     elif opcion in ['-e','--editar']:
         ticket_ID = input("Ingrese ID del Ticket: ")
+        verificar = verificar_ticketID(ticket_ID)
         client.send(ticket_ID.encode())  # manda el id el cliente
+        if verificar == False:
+            print("NO existe un TICKET con el ID ingresado")
+            continue
         ticket = client.recv(1024).decode()  # recibe el ticket
         ticket_editado = menu_editar(ticket)
         ticket_editado_json = json.dumps(ticket_editado)

@@ -1,8 +1,7 @@
 import threading,time
 from funciones_server import *
-import json,logging
-from multiprocessing import Process
-from funciones_cliente import exportarTickets
+import json
+
 serversocket = createSocketServer()
 establecerConexion_Server(serversocket)
 
@@ -42,6 +41,9 @@ def th_server(sock,addr, semaphore):
         elif opcion.decode() == ('-e') or opcion.decode() == ('--editar'):
             ticket_ID = sock.recv(1024).decode()
             print("Id Recibido amigo: ", ticket_ID)
+            verificar = verificar_ticketID(ticket_ID)
+            if verificar == False:
+                continue
             semaphore.acquire()
             ticket = traerTicketPorID(ticket_ID)
             ticket_objeto = json.dumps(ticket, cls=MyEncoder)
