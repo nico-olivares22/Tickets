@@ -6,7 +6,7 @@ from funciones_cliente import exportarTickets
 serversocket = createSocketServer()
 establecerConexion_Server(serversocket)
 
-def th_server(sock,addr, semaphore,lock):
+def th_server(sock,addr, semaphore):
     print("Iniciando thread...\n")
     while True:
         opcion = sock.recv(1024)
@@ -19,9 +19,7 @@ def th_server(sock,addr, semaphore,lock):
         if opcion.decode() == ('-i') or opcion.decode() == ('--insertar'):
             ticket = sock.recv(1024).decode()
             ticket_dict = json.loads(ticket)
-            print(lock.acquire())
             crearTicket(ticket_dict)
-            lock.release()
             print("Ticket creado por el Cliente %s:%s" %(addr), "\n")
 
         elif opcion.decode() == ('-l') or opcion.decode() == ('--listar'):
@@ -76,9 +74,9 @@ try:
             print("\nObteniendo conexion desde %s:%d\n" % (addr[0],addr[1]))
             ThreadCount += 1
             print('Thread Number: ' + str(ThreadCount), "\n")
-            lock = threading.Lock() #se crea el lock
+            #lock = threading.Lock() #se crea el lock
             semaphore = threading.Semaphore(1)
-            th = threading.Thread(target=th_server, args=(clientsocket, addr,semaphore,lock,)).start()
+            th = threading.Thread(target=th_server, args=(clientsocket, addr,semaphore,)).start()
 
 except KeyboardInterrupt:
         clientsocket.close()

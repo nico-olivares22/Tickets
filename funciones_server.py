@@ -16,7 +16,7 @@ def establecerConexion_Server(serversocket):
         host = ""
         port = p
         serversocket.bind((host, port))  # linea de comandos, host y puerto
-        serversocket.listen(5)
+        serversocket.listen(1) #había un cinco antes
 
 def crearTicket(lista):  # funcion server, que permite insertar un Ticket
     ticket = Ticket(title=lista['title'], author=lista['author'], description=lista['description'],
@@ -42,10 +42,12 @@ def editarTicketServer(id, valores):
 
 def traerTicketPorID(id):
     ticket = session.query(Ticket).get(int(id))
-    if session.query(Ticket).filter(Ticket.ticket_Id.ilike(id)).count() == 0:
-        print("No existe el ID Amigo")
-    return ticket.toJSON()
-
+    try:
+        if session.query(Ticket).filter(Ticket.ticket_Id.ilike(id)).count() == 0:
+            print("No existe el ID Amigo")
+        return ticket.toJSON()
+    except AttributeError:
+        print("NO hay Ticket con ese ID")
 # FILTRO
 
 def filtrarByAuthor(argumento,ticket):  # permite filtrar tickets por autor
@@ -87,7 +89,3 @@ def traerTicketsPorCantidad(lista, sock, cantidad):
     for ticket in lista[0:cantidad_integer]:
         ticket_objeto = json.dumps(ticket,cls=MyEncoder)
         sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
-
-def generarProceso_Pararelo(sock):
-    proceso = multiprocessing.Process(target=(filtrarTickets_Server(sock)))
-    return proceso

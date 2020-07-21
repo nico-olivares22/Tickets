@@ -178,8 +178,7 @@ def recibirTicketsDespachados(client,cantidad):
         tickets.append(client.recv(1024).decode())
     print("Tickets Agregados: ", len(tickets))
     imprimirTickets(tickets)
-    #exportarTickets(tickets)
-    proceso = Process(target=exportarTickets(tickets))
+    proceso = Process(target=exportarTickets, args=(tickets,))
     proceso.start()
     print("Proceso:", os.getpid())
 
