@@ -39,11 +39,15 @@ while True:
         filtarTickets(client)
         cantidad_recibida = client.recv(1024).decode()  # linea 1
         print("Cantidad Recibida: ", cantidad_recibida)
+        verificar = verificar_Cantidad_Cliente(cantidad_recibida) #linea agregada para verificar cantidad
+        if verificar == False:
+            print("NO hay tickets con ese/esos argumentos para Filtrar")
+            continue
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ")
         while int(cantidad) > int(cantidad_recibida):
             cantidad = str(input("Ingrese la Cantidad de Tickets que quiere Traer: "))
         client.send(cantidad.encode())  # linea 4
-        recibirTickets(client,cantidad)
+        recibirTickets(client, cantidad)
 
     elif opcion in ['-e','--editar']:
         ticket_ID = input("Ingrese ID del Ticket: ")
@@ -56,10 +60,15 @@ while True:
         ticket_editado = menu_editar(ticket)
         ticket_editado_json = json.dumps(ticket_editado)
         client.send(ticket_editado_json.encode())
+
     elif opcion in ['-d', '--despachar']:
         despacharTicketsCliente(client)
         cantidad_recibida = client.recv(1024).decode()  # linea 1
         print("Cantidad Recibida: ", cantidad_recibida)  # linea 2
+        verificar = verificar_Cantidad_Cliente(cantidad_recibida)  # linea agregada para verificar cantidad
+        if verificar == False:
+            print("NO hay tickets con ese/esos argumentos para Exportar")
+            continue
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Exportar: ")  # linea 4
         while int(cantidad) > int(cantidad_recibida):
             cantidad = str(input("Ingrese la Cantidad de Tickets que quiere Traer: "))

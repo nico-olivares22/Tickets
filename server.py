@@ -34,6 +34,9 @@ def th_server(sock,addr, semaphore):
             tickets_filtrados = tickets_filtrados.all()
             proporcion = len(tickets_filtrados) #linea 1
             sock.send(str(proporcion).encode()) #linea 2
+            prueba = verificar_Cantidad_Servidor(proporcion) #linea agregada para verificar cantidad
+            if prueba == False:
+                continue
             cantidad_recibida = sock.recv(1024).decode() #linea 3
             traerTicketsPorCantidad(tickets_filtrados,sock,cantidad_recibida)
             print("Cliente %s:%s ha filtrado Tickets " % (addr), "\n")
@@ -59,6 +62,9 @@ def th_server(sock,addr, semaphore):
             tickets_filtrados = tickets_filtrados.all()
             proporcion = len(tickets_filtrados)  # linea 1
             sock.send(str(proporcion).encode())  # linea 2
+            prueba = verificar_Cantidad_Servidor(proporcion)  # linea agregada para verificar cantidad
+            if prueba == False:
+                continue
             cantidad_recibida = sock.recv(1024).decode()  # linea 3
             traerTicketsPorCantidad(tickets_filtrados, sock, cantidad_recibida)
             print("Cliente %s:%s ha Exportado Tickets" % (addr), "\n")

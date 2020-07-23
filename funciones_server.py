@@ -92,3 +92,10 @@ def traerTicketsPorCantidad(lista, sock, cantidad):
         ticket_objeto = json.dumps(ticket,cls=MyEncoder)
         sock.send(ticket_objeto.encode()) #manda los tickets de la base de datos
 
+def verificar_Cantidad_Servidor(cantidad): #tipo INT
+    if cantidad == 0:
+        retorno = False
+    else:
+        retorno = True
+    return retorno
+

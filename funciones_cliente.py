@@ -1,9 +1,10 @@
 from getopt import GetoptError
 import socket,json,getopt
 from model import MyEncoder
-import csv, zipfile,sys,os
+import csv, zipfile,sys
 from random import randint
 from multiprocessing import Process
+
 def createSocketCliente():  # función que permite crear Socket del Servidor
     try:
         variable = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -181,4 +182,12 @@ def recibirTicketsDespachados(client,cantidad):
         imprimirTickets(tickets)
         proceso = Process(target=exportarTickets, args=(tickets,))
         proceso.start()
+
+
+def verificar_Cantidad_Cliente(cantidad): #tipo STR
+    if cantidad == str(0):
+        retorno = False
+    else:
+        retorno = True
+    return retorno
 
