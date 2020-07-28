@@ -1,8 +1,8 @@
 from funciones_cliente import *
 from funciones_server import verificar_ticketID
 
-client = createSocketCliente()
-establecerConexion_Cliente(client)
+client = createSocketCliente() #se crear el socket del cliente
+establecerConexion_Cliente(client) # se establece la conexión del cliente
 
 while True:
 

@@ -78,7 +78,7 @@ def th_server(sock,addr, semaphore):
 ThreadCount = 0
 try:
     while True:
-            clientsocket, addr = serversocket.accept()
+            clientsocket, addr = serversocket.accept() #accept espera una conexión entrante. Esta función devuelve una conexión abierta entre el servidor y cliente, junto con la dirección del cliente.
             print("\nObteniendo conexion desde %s:%d\n" % (addr[0],addr[1]))
             ThreadCount += 1
             print('Thread Number: ' + str(ThreadCount), "\n")

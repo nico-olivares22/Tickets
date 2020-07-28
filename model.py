@@ -34,19 +34,11 @@ class Ticket(Base):
         }
         return ticket_json
 
-
-    # Convertir JSON a objeto
-    @staticmethod
-    def desde_json(ticket_json):  # clave valor
-        ticket_Id = ticket_json.ticket_Id
-        title = ticket_json.title
-        author = ticket_json.author
-        description = ticket_json.description
-        status = ticket_json.status
-        date = ticket_json.date
-        return Ticket(title=title,author=author,description=description,status=status,date=date)
-
 class MyEncoder(json.JSONEncoder):
+    """
+    Serializador para solucionar el error de Object type Ticket no es Serializable, dado que Json no sabe como serializar
+    un objeto de tipo Ticket.
+    """
     def default(self, obj):
         if isinstance(obj, Ticket):
             return {"ticket_Id":obj.ticket_Id,"title":obj.title, "author":obj.author, "description": obj.description, "status":obj.status, "date": str(obj.date)}
