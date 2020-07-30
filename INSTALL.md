@@ -1,5 +1,6 @@
 # INSTRUCCIONES PARA LANZAR E INSTALAR LA APLICACIÓN
     Los siguientes pasos para lanzar la Aplicación son para el Sistema Operativo Linux.
+    La Versión de Ubuntu donde fue hecho el proyecto es la 18.04.1 LTS.
     Antes de hacer los siguientes pasos hay que tener instalado python3, pip3, virtualenv y MySQL. 
     Para instalar python3 ejecute: 
     $ sudo apt-get update

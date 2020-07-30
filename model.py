@@ -4,6 +4,9 @@ from db_config import Base
 
 
 class Ticket(Base):
+    """
+    Clase Ticket con sus Atributos los cuales se guardan en la Base de Datos
+    """
     __tablename__ = "tickets"
     ticket_Id = Column(Integer, primary_key=True)  # clave primaria
     title = Column(String(45), nullable=False)
@@ -13,9 +16,22 @@ class Ticket(Base):
     date = Column(Date, nullable=False)
 
     def __repr__(self):
+        """
+        Esta función devuelve una cadena que contiene una representación imprimible de un objeto
+        Returns: la cadena
+        """
         return '<Ticket: %r %r %r %r %r %r>' % (self.ticket_Id,self.title, self.author,self.description, self.status, self.date)
 
     def __init__(self, title, author, description, status, date):
+        """
+        Constructor de la Clase Ticket
+        Args:
+            title: título del Ticket
+            author: autor del Ticket
+            description: Descripción del Ticket
+            status: Estado del Ticket
+            date: Fecha del Ticket
+        """
         self.title = title
         self.author = author
         self.description = description

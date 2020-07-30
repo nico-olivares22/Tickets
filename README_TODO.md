@@ -12,6 +12,10 @@
     9) Que cada autor tenga un perfil con sus datos personales.
     10) Elaborar una página principal donde salgan todos los Tickets paginados con cada autor ordenados 
     por fecha, que primero se muestren los mas recientes.
+    11) Almacenar los ID de los Tickets que se estén por Editar en una Lista que sea administrada por el servidor y que este le mande a los clientes cuando
+    quieran editar un Ticket un mensaje de que Ticket esta siendo editado con el fin de que se pueda editar un Ticket a la vez por cliente, de esta manera
+    y con la implementación de un semáforo en el servivor cuando dos o más clientes ingresen el mismo ID para editar un Ticket al coincidir el ID ingresado el
+    o los clientes que entren después van a permanecer bloqueados hasta que el primero termine.
     
     
     

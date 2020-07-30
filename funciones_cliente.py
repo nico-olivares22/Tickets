@@ -145,8 +145,8 @@ def filtarTickets(client):
     Returns:ticket (diccionario)
     """
     print("Puede filtrar por autor, escriba -a + Nombre del Autor. Puede filtrar por Estado, escriba -e + Estado y puede filtrar por Fecha, "
-          "escriba -f + fecha. Escriba -l para traer todos los Tickets. Puede filtrar de Manera Simultanea también mezclando los filtros, por ejemplo -e pendiente -a robot.")
-    keywords = input("-a -e -f -l: ").split(" ") #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
+          "escriba -f + fecha en formato año-mes-día. Escriba -l para traer todos los Tickets. Puede filtrar de Manera Simultánea también mezclando los filtros, por ejemplo -e pendiente -a robot.")
+    keywords = input("-a -e -f -l: ").split(" ") #se pasa el string a lista y se divide la lista en espacios
     ticket = {}
     try:
         (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:l')
@@ -157,7 +157,7 @@ def filtarTickets(client):
             elif op in ['-e']:
                 argumento = ar
                 ticket['status'] = argumento
-            elif op in ['-f']:  # consultar metodos de validaciones
+            elif op in ['-f']:
                 argumento = ar
                 ticket['date'] = argumento
             elif op in ['-l']:
@@ -179,8 +179,8 @@ def despacharTicketsCliente(client):
     Returns:ticket (diccionario)
     """
     print("Puede exportar por autor, escriba -a + Nombre del Autor. Puede exportar por Estado, escriba -e + Estado y puede exportar por Fecha, "
-          "escriba -f + fecha. Escriba -l para exportar todos los Tickets. Puede exportar Tickets de Manera Simultanea también.")
-    keywords = input("-a -e -f -l: ").split(" ") #se divide en 1 nomas la lista por ende puedo filtrar con mas de un argumento
+          "escriba -f + fecha en formato año-mes-día. Escriba -l para exportar todos los Tickets. Puede exportar Tickets de Manera Simultánea también.")
+    keywords = input("-a -e -f -l: ").split(" ") #se pasa el string a lista y se divide la lista en espacios
     ticket = {}
     try:
         (opts, args) = getopt.getopt(keywords, 'p:a:a:e:f:l')
@@ -191,7 +191,7 @@ def despacharTicketsCliente(client):
             elif op in ['-e']:
                 argumento = ar
                 ticket['status'] = argumento
-            elif op in ['-f']:  # consultar metodos de validaciones
+            elif op in ['-f']:
                 argumento = ar
                 ticket['date'] = argumento
             elif op in ['-l']:
