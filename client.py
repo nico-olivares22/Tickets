@@ -1,10 +1,8 @@
-import socket,sys,getopt,json,os
 from funciones_cliente import *
-from model import MyEncoder
-from json import JSONDecodeError
 from funciones_server import verificar_ticketID
-client = createSocketCliente()
-establecerConexion_Cliente(client)
+
+client = createSocketCliente() #se crear el socket del cliente
+establecerConexion_Cliente(client) # se establece la conexión del cliente
 
 while True:
 
@@ -39,29 +37,42 @@ while True:
 
     elif opcion in ['-f','--filtrar']:
         filtarTickets(client)
-        cantidad_recibida = client.recv(1024).decode()  # linea 1
+        cantidad_recibida = client.recv(1024).decode()
         print("Cantidad Recibida: ", cantidad_recibida)
+        verificar = verificar_Cantidad_Cliente(cantidad_recibida) #linea agregada para verificar cantidad
+        if verificar == False:
+            print("NO hay tickets con ese/esos argumentos para Filtrar")
+            continue
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ")
         while int(cantidad) > int(cantidad_recibida):
             cantidad = str(input("Ingrese la Cantidad de Tickets que quiere Traer: "))
-        client.send(cantidad.encode())  # linea 4
-        recibirTickets(client,cantidad)
+        client.send(cantidad.encode())
+        recibirTickets(client, cantidad)
 
     elif opcion in ['-e','--editar']:
         ticket_ID = input("Ingrese ID del Ticket: ")
+        verificar = verificar_ticketID(ticket_ID)
         client.send(ticket_ID.encode())  # manda el id el cliente
+        if verificar == False:
+            print("NO existe un TICKET con el ID ingresado")
+            continue
         ticket = client.recv(1024).decode()  # recibe el ticket
         ticket_editado = menu_editar(ticket)
         ticket_editado_json = json.dumps(ticket_editado)
         client.send(ticket_editado_json.encode())
+
     elif opcion in ['-d', '--despachar']:
         despacharTicketsCliente(client)
-        cantidad_recibida = client.recv(1024).decode()  # linea 1
-        print("Cantidad Recibida: ", cantidad_recibida)  # linea 2
-        cantidad = input("Ingrese la Cantidad de Tickets que quiere Exportar: ")  # linea 4
+        cantidad_recibida = client.recv(1024).decode()
+        print("Cantidad Recibida: ", cantidad_recibida)
+        verificar = verificar_Cantidad_Cliente(cantidad_recibida)  # linea agregada para verificar cantidad
+        if verificar == False:
+            print("NO hay tickets con ese/esos argumentos para Exportar")
+            continue
+        cantidad = input("Ingrese la Cantidad de Tickets que quiere Exportar: ")
         while int(cantidad) > int(cantidad_recibida):
             cantidad = str(input("Ingrese la Cantidad de Tickets que quiere Traer: "))
-        client.send(cantidad.encode())  # linea 4
+        client.send(cantidad.encode())
         recibirTicketsDespachados(client, cantidad)
 
     elif opcion in ['-c','--cerrar']:
