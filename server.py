@@ -7,7 +7,7 @@ establecerConexion_Server(serversocket)
 
 def th_server(sock,addr):
     """
-    Función del servidor encargada de interpretar los comandos enviados por el cliente
+    Función del Servidor encargada de interpretar los comandos enviados por el Cliente.
     Args:
         sock: socket aceptado del cliente
         addr: dirección IP y puerto del Cliente
@@ -17,7 +17,7 @@ def th_server(sock,addr):
         opcion = sock.recv(1024)
         fecha = date.today() #fecha de operación
         print('Cliente %s:%s' % (addr[0], addr[1]))
-        print("Opcion: " + opcion.decode()) #opción que viene desde el cliente
+        print("Opción: " + opcion.decode()) #opción que viene desde el cliente
         print("Fecha: ", fecha) #imprimir fecha
         print("")
         historial_server(fecha=fecha, opcion=opcion.decode(), address=addr)
@@ -76,16 +76,15 @@ def th_server(sock,addr):
             print("Cliente %s:%s DESCONECTADO \n" %(addr))
             break
         else:
-            print('\nOpcion invalida!\n')
+            print('\nOpción Inválida!\n')
 
 ThreadCount = 0
 try:
     while True:
             clientsocket, addr = serversocket.accept() #accept espera una conexión entrante. Esta función devuelve una conexión abierta entre el servidor y cliente, junto con la dirección del cliente.
-            print("\nObteniendo conexion desde %s:%d\n" % (addr[0],addr[1]))
+            print("\nObteniendo conexión desde %s:%d\n" % (addr[0],addr[1]))
             ThreadCount += 1
             print('Thread Number: ' + str(ThreadCount), "\n")
             th = threading.Thread(target=th_server, args=(clientsocket, addr,)).start()
-
 except KeyboardInterrupt:
-        clientsocket.close()
+    clientsocket.close()
