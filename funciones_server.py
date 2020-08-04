@@ -6,7 +6,7 @@ import socket, json,getopt,sys
 
 def createSocketServer():
     """
-    Función que permite crear Socket del Servidor
+    Función que permite crear Socket del Servidor.
     Returns:
         variable: socket creado del server
     """
@@ -15,7 +15,7 @@ def createSocketServer():
 
 def establecerConexion_Server(serversocket):
     """
-    Función encargada de establecer la conexión del servidor con el/los clientes
+    Función encargada de establecer la conexión del Servidor con el socket creado anteriormente.
     Args:
         serversocket: socket del servidor creado
     """
@@ -23,26 +23,26 @@ def establecerConexion_Server(serversocket):
     for (op, ar) in opcion:
         if op == '-p':
             p = int(ar)
-            print('Opcion -p exitosa!')
+            print('Opción -p exitosa!')
         host = ""
         port = p
         serversocket.bind((host, port))  #se utiliza para asociar el conector con la dirección del servidor.
-        serversocket.listen(1) #escucha a un cliente
+        serversocket.listen(1) #escucha a un cliente en simultáneo a la vez
 
-def crearTicket(lista):
+def crearTicket(diccionario):
     """
-    Permite insertar un Ticket a la Base de Datos
+    Permite insertar un Ticket a la Base de Datos.
     Args:
-        lista: que es un diciconario con todos los datos cargados
+        diccionario: que es un diciconario con todos los datos cargados
     """
-    ticket = Ticket(title=lista['title'], author=lista['author'], description=lista['description'],
-                    status=lista['status'], date=date.today())
+    ticket = Ticket(title=diccionario['title'], author=diccionario['author'], description=diccionario['description'],
+                    status=diccionario['status'], date=date.today())
     session.add(ticket)
     session.commit()
 
 def listarTicketsServer():
     """
-    Función que permite listar todos los tickets de la Base de Datos
+    Función que permite listar todos los tickets de la Base de Datos.
     Returns: tickets (lista con todos los tickets)
     """
     tickets = session.query(Ticket).all()
@@ -51,7 +51,7 @@ def listarTicketsServer():
 
 def editarTicketServer(id, valores):
     """
-    Función que se encarga de guardar en la Base de Datos un Ticket Editado
+    Función que se encarga de guardar en la Base de Datos un Ticket Editado.
     Args:
         id: id del Ticket Editado
         valores: son los datos modificados por el usuario
@@ -68,7 +68,7 @@ def editarTicketServer(id, valores):
 
 def traerTicketPorID(id):
     """
-    Función que se encarga de traer un Ticket por ID
+    Función que se encarga de traer un Ticket por ID.
     Args:
         id: id del Ticket
     Returns: ticket en JSON
@@ -78,9 +78,9 @@ def traerTicketPorID(id):
 
 def verificar_ticketID(ticket_ID):
     """
-    Se encarga de Verificar si existe el ID ingresado en La Base de Datos
+    Se encarga de Verificar si existe el ID ingresado en La Base de Datos.
     Args:
-        ticket_ID: ID ingresado
+        ticket_ID: ID del Ticket ingresado
     Returns: retorno, True si existe, en caso contrario False
     """
     try:
@@ -92,7 +92,7 @@ def verificar_ticketID(ticket_ID):
 
 def filtrarByAuthor(argumento,ticket):
     """
-    Permite Filtrar tickets por author
+    Permite Filtrar tickets por Autor.
     Args:
         argumento: argumento que ingreso el usuario
         ticket: query
@@ -103,7 +103,7 @@ def filtrarByAuthor(argumento,ticket):
 
 def filtrarByStatus(argumento,ticket):
     """
-    Permite Filtrar tickets por estado
+    Permite Filtrar Tickets por Estado.
     Args:
         argumento: argumento que ingreso el usuario
         ticket: query
@@ -114,7 +114,7 @@ def filtrarByStatus(argumento,ticket):
 
 def filtrarByFecha(argumento,ticket):
     """
-    Permite Filtrar tickets por Fecha
+    Permite Filtrar Tickets por Fecha.
     Args:
         argumento: argumento que ingreso el usuario
         ticket: query
@@ -125,7 +125,7 @@ def filtrarByFecha(argumento,ticket):
 
 def filtrarTickets_Server(sock):
     """
-    FUnción encargada de Aplicar los distintos filtros
+    Función encargada de Aplicar los distintos Filtros.
     Args:
         sock: socket del servidor creado
     Returns: lista de tickets con filtros listos
@@ -144,7 +144,7 @@ def filtrarTickets_Server(sock):
 
 def recibirArgumento(sock):
     """
-    Función que se encarga de recibir un argumento mandado por el CLiente
+    Función que se encarga de recibir un argumento mandado por el Cliente.
     Args:
         sock: socket del servidor creado
     Returns:
@@ -154,7 +154,7 @@ def recibirArgumento(sock):
 
 def historial_server(fecha,opcion,address):
     """
-    Función encargada de administrar un historial de las distintas operaciones que hace el cliente
+    Función encargada de administrar un historial de las distintas operaciones que hace el Cliente.
     Args:
         fecha: fecha de la operación
         opcion: operación del cliente
@@ -167,7 +167,7 @@ def historial_server(fecha,opcion,address):
 
 def traerTicketsPorCantidad(lista, sock, cantidad):
     """
-    Función encargada de traer Tickets por la cantidad ingresada por el usuario y mandar esa cantidad de Tickets
+    Función encargada de traer Tickets por la cantidad ingresada por el usuario y mandar esa cantidad de Tickets.
     Args:
         lista: lista con tickets
         sock: socket del servidor creado
@@ -180,7 +180,7 @@ def traerTicketsPorCantidad(lista, sock, cantidad):
 
 def verificar_Cantidad_Servidor(cantidad):
     """
-    Función que comprueba la cantidad de tickets Disponibles
+    Función que comprueba la cantidad de Tickets Disponibles.
     Args:
         cantidad: cantidad tickets disponibles
     Returns: retorno, False cuando no hay tickets, True cuando si hay

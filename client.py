@@ -8,12 +8,12 @@ while True:
 
     print("""\n
     \t\t\t *** Menu ***
-    * -i/--insertar para insertar un Ticket
-    * -l/--listar para listar los Tickets 
-    * -f/--filtrar para filtrar Tickets
-    * -e/--editar para editar un Ticket
-    * -d/--despachar para exportar tickets 
-    * -c/--cerrar para cerrar el cliente
+    * -i/--insertar para Insertar un Ticket
+    * -l/--listar para Listar los Tickets 
+    * -f/--filtrar para Filtrar Tickets
+    * -e/--editar para Editar un Ticket
+    * -d/--despachar para Exportar Tickets 
+    * -c/--cerrar para Cerrar el Cliente
     """)
     opcion = input("Opción: ")
     opts, args = getopt.getopt(opcion, "p:a:ilfedc",['insertar','listar','filtrar','editar','despachar','cerrar'] )
@@ -45,7 +45,7 @@ while True:
             continue
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Traer: ")
         while int(cantidad) > int(cantidad_recibida):
-            cantidad = str(input("Ingrese la Cantidad de Tickets que quiere Traer: "))
+            cantidad = str(input("Ha Ingresado una Cantidad Mayor a la Disponible, Ingrese la Cantidad de Tickets que quiere Traer: "))
         client.send(cantidad.encode())
         recibirTickets(client, cantidad)
 
@@ -71,16 +71,15 @@ while True:
             continue
         cantidad = input("Ingrese la Cantidad de Tickets que quiere Exportar: ")
         while int(cantidad) > int(cantidad_recibida):
-            cantidad = str(input("Ingrese la Cantidad de Tickets que quiere Traer: "))
+            cantidad = str(input("Ha Ingresado una Cantidad Mayor a la Disponible, Ingrese la Cantidad de Tickets que quiere Exportar: "))
         client.send(cantidad.encode())
         recibirTicketsDespachados(client, cantidad)
 
     elif opcion in ['-c','--cerrar']:
         break
+
     else:
-        print('\nOpcion invalida!\n')
-        input('Apretar Enter...')
-try:
-    print("")
-except KeyboardInterrupt:
-    client.close()
+        print('\nOpción Inválida!\n')
+        input('Aprete Enter...')
+
+client.close()

@@ -5,7 +5,7 @@ from db_config import Base
 
 class Ticket(Base):
     """
-    Clase Ticket con sus Atributos los cuales se guardan en la Base de Datos
+    Clase Ticket con sus Atributos los cuales se guardan en la Base de Datos.
     """
     __tablename__ = "tickets"
     ticket_Id = Column(Integer, primary_key=True)  # clave primaria
@@ -17,14 +17,14 @@ class Ticket(Base):
 
     def __repr__(self):
         """
-        Esta función devuelve una cadena que contiene una representación imprimible de un objeto
+        Esta función devuelve una cadena que contiene una representación imprimible de un objeto.
         Returns: la cadena
         """
         return '<Ticket: %r %r %r %r %r %r>' % (self.ticket_Id,self.title, self.author,self.description, self.status, self.date)
 
     def __init__(self, title, author, description, status, date):
         """
-        Constructor de la Clase Ticket
+        Constructor de la Clase Ticket.
         Args:
             title: título del Ticket
             author: autor del Ticket
@@ -40,6 +40,11 @@ class Ticket(Base):
 
     # Convertir objeto Ticket  en JSON
     def toJSON(self):
+        """
+        Función que se encarga de convertir un objeto ticket a Json.
+        Returns: ticket_json que es un diccionario
+
+        """
         ticket_json = {
             'ticket_Id':self.ticket_Id,
             'title': self.title,
